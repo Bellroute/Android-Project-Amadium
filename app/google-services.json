@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "946077493642",
+    "firebase_url": "https://amadium-632d8.firebaseio.com",
+    "project_id": "amadium-632d8",
+    "storage_bucket": "amadium-632d8.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946077493642:android:de4a71e488ec64ec",
+        "android_client_info": {
+          "package_name": "com.pubak.econovation.amadium"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "946077493642-ndfseisof47h74jnc52fevos1tp2ats9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCEdaLJ9nFqyaFCtv-pM17l7BtRWiLh32w"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
