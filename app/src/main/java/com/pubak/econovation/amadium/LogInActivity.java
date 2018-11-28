@@ -47,7 +47,7 @@ public class LogInActivity extends AppCompatActivity {
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!editTextEmail.getText().toString().equals("") && !editTextPassword.getText().toString().equals("")) {
+                if (!editTextEmail.getText().toString().replace(" ","").equals("") && !editTextPassword.getText().toString().replace(" ","").equals("")) {
                     loginUser(editTextEmail.getText().toString(), editTextPassword.getText().toString());
                 } else {
                     Toast.makeText(LogInActivity.this, "계정과 비밀번호를 입력하세요.", Toast.LENGTH_LONG).show();
