@@ -11,13 +11,12 @@
     <item
         android:id="@+id/menuItem_bottomBar_ranking"
         android:icon="@drawable/ic_ranking"
-        android:title="@string/rank"
-        app:showAsAction="ifRoom" />
+        android:title="@string/rank" />
 
     <item
         android:id="@+id/menuItem_bottomBar_results"
         android:icon="@drawable/ic_results"
-        android:title="@string/result" />
+        android:title="@string/result"/>
 
     <item
         android:id="@+id/menuItem_bottomBar_search"
