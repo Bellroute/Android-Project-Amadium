@@ -20,8 +20,6 @@ public class LogInActivity extends AppCompatActivity {
     private FirebaseAuth.AuthStateListener firebaseAuthListener;
     private EditText editTextEmail;
     private EditText editTextPassword;
-    private Button buttonLogIn;
-    private Button buttonSignUp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +31,7 @@ public class LogInActivity extends AppCompatActivity {
         editTextEmail = (EditText) findViewById(R.id.edittext_email);
         editTextPassword = (EditText) findViewById(R.id.edittext_password);
 
-        buttonSignUp = (Button) findViewById(R.id.btn_signup);
+        Button buttonSignUp = (Button) findViewById(R.id.btn_signup);
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -43,7 +41,7 @@ public class LogInActivity extends AppCompatActivity {
             }
         });
 
-        buttonLogIn = (Button) findViewById(R.id.btn_login);
+        Button buttonLogIn = (Button) findViewById(R.id.btn_login);
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,6 +59,7 @@ public class LogInActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Intent intent = new Intent(LogInActivity.this, MainActivity.class);
+                    MainActivity.getCurrentUser(user);
                     startActivity(intent);
                     finish();
                 } else {
