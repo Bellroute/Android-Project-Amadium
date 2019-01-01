@@ -3,7 +3,6 @@ package com.pubak.econovation.amadium.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-
 import com.pubak.econovation.amadium.fragment.MatchListFragment;
 import com.pubak.econovation.amadium.fragment.ProfileFragment;
 import com.pubak.econovation.amadium.fragment.RankListFragment;
@@ -23,20 +22,15 @@ public class TabPagerAdapter extends FragmentStatePagerAdapter {
 
         switch (position) {
             case 0:
-                ProfileFragment profileFragment = new ProfileFragment();
-                return profileFragment;
+                return new ProfileFragment();
             case 1:
-                MatchListFragment matchListFragment = new MatchListFragment();
-                return matchListFragment;
+                return new MatchListFragment();
             case 2:
-                RankListFragment rankListFragment = new RankListFragment();
-                return rankListFragment;
+                return new RankListFragment();
             case 3:
-                ResultListFragment resultListFragment = new ResultListFragment();
-                return resultListFragment;
+                return new ResultListFragment();
             case 4:
-                SearchUserFragment searchUserFragment = new SearchUserFragment();
-                return searchUserFragment;
+                return new SearchUserFragment();
 
             default:
                 return null;
