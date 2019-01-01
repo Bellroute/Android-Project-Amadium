@@ -1,4 +1,4 @@
-package com.pubak.econovation.amadium;
+package com.pubak.econovation.amadium.activity;
 
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -9,6 +9,12 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.pubak.econovation.amadium.fragment.MatchListFragment;
+import com.pubak.econovation.amadium.fragment.ProfileFragment;
+import com.pubak.econovation.amadium.R;
+import com.pubak.econovation.amadium.fragment.RankListFragment;
+import com.pubak.econovation.amadium.fragment.ResultListFragment;
+import com.pubak.econovation.amadium.fragment.SearchUserFragment;
 
 public class MainActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigationView;
