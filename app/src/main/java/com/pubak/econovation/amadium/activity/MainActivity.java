@@ -1,14 +1,18 @@
 package com.pubak.econovation.amadium.activity;
 
+import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
+import com.pubak.econovation.amadium.adapter.TabPagerAdapter;
 import com.pubak.econovation.amadium.fragment.MatchListFragment;
 import com.pubak.econovation.amadium.fragment.ProfileFragment;
 import com.pubak.econovation.amadium.R;
@@ -17,21 +21,52 @@ import com.pubak.econovation.amadium.fragment.ResultListFragment;
 import com.pubak.econovation.amadium.fragment.SearchUserFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private BottomNavigationView bottomNavigationView;
     private TextView userName;
     private static String userEmail;
     private static String userId;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
+    @SuppressLint("ResourceType")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        userName = findViewById(R.id.user_view);
-        userName.setText(userEmail.substring(0, userEmail.lastIndexOf("@")));
+        // userName = findViewById(R.id.user_view);
+        // userName.setText(userEmail.substring(0, userEmail.lastIndexOf("@")));
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(navigationListener);
+        tabLayout = (TabLayout)findViewById(R.id.tablayout);
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_user));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_list));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_ranking));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_results));
+        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_search));
+        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+
+        viewPager = (ViewPager)findViewById(R.id.viewpager);
+
+        TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
+        viewPager.setAdapter(pagerAdapter);
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                viewPager.setCurrentItem(tab.getPosition());
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
+
     }
 
     // LoginActivity 에서 사용자 정보 받아오는 메소드
@@ -39,35 +74,4 @@ public class MainActivity extends AppCompatActivity {
         userEmail = user.getEmail();
         userId = user.getUid();
     }
-
-    private BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                    Fragment selectedFragment = null;
-
-                    switch (item.getItemId()) {
-                        case R.id.menuItem_bottomBar_profile:
-                            selectedFragment = new ProfileFragment();
-                            break;
-                        case R.id.menuItem_bottomBar_list:
-                            selectedFragment = new MatchListFragment();
-                            break;
-                        case R.id.menuItem_bottomBar_ranking:
-                            selectedFragment = new RankListFragment();
-                            break;
-                        case R.id.menuItem_bottomBar_results:
-                            selectedFragment = new ResultListFragment();
-                            break;
-                        case R.id.menuItem_bottomBar_search:
-                            selectedFragment = new SearchUserFragment();
-                            break;
-                    }
-
-                    getSupportFragmentManager().beginTransaction().
-                            replace(R.id.fragment_container, selectedFragment).commit();
-
-                    return true;
-                }
-            };
 }
