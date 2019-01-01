@@ -4,6 +4,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/menuItem_bottomBar_profile"
+        android:icon="@drawable/ic_user"
+        android:title="Profile"/>
+
+    <item
         android:id="@+id/menuItem_bottomBar_list"
         android:icon="@drawable/ic_list"
         android:title="@string/list" />
