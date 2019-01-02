@@ -33,8 +33,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // userName = findViewById(R.id.user_view);
-        // userName.setText(userEmail.substring(0, userEmail.lastIndexOf("@")));
+        userName = findViewById(R.id.user_view);
+        userName.setText(userEmail.substring(0, userEmail.lastIndexOf("@")));
 
         tabLayout = (TabLayout)findViewById(R.id.tablayout);
         tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.ic_user));
