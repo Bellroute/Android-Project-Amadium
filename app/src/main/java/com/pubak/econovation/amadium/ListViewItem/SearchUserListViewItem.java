@@ -4,7 +4,7 @@ package com.pubak.econovation.amadium.ListViewItem;
 public class SearchUserListViewItem {
     private String userImageUrl;
     private String userName;
-    private String userLocation;
+    private String userEmail;
 
     public String getUserImageUrl() {
         return userImageUrl;
@@ -23,10 +23,10 @@ public class SearchUserListViewItem {
     }
 
     public String getUserEmail() {
-        return userLocation;
+        return userEmail;
     }
 
-    public void setUserEmail(String userLocation) {
-        this.userLocation = userLocation;
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

@@ -12,11 +12,13 @@ import android.widget.TextView;
 
 import com.pubak.econovation.amadium.ListViewItem.SearchUserListViewItem;
 import com.pubak.econovation.amadium.R;
+import com.pubak.econovation.amadium.dto.UserDTO;
 
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.List;
 
 public class ListViewAdapter extends BaseAdapter{
     private ArrayList<SearchUserListViewItem> searchUserListViewItemList = new ArrayList<>();
@@ -83,5 +85,17 @@ public class ListViewAdapter extends BaseAdapter{
         item.setUserEmail(email);
 
         searchUserListViewItemList.add(item);
+    }
+
+    public void addItemAll(List<UserDTO> userDTOs) {
+        SearchUserListViewItem item = new SearchUserListViewItem();
+
+        for (UserDTO userDTO : userDTOs) {
+            item.setUserName(userDTO.getUsername());
+            item.setUserImageUrl(userDTO.getProfileImageUrl());
+            item.setUserEmail(userDTO.getEmail());
+
+            searchUserListViewItemList.add(item);
+        }
     }
 }
