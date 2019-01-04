@@ -1,18 +1,17 @@
 package com.pubak.econovation.amadium.ListViewItem;
 
-import android.graphics.drawable.Drawable;
 
 public class SearchUserListViewItem {
-    private Drawable userImage;
+    private String userImageUrl;
     private String userName;
     private String userLocation;
 
-    public Drawable getUserImage() {
-        return userImage;
+    public String getUserImageUrl() {
+        return userImageUrl;
     }
 
-    public void setUserImage(Drawable userImage) {
-        this.userImage = userImage;
+    public void setUserImageUrl(String userImageUrl) {
+        this.userImageUrl = userImageUrl;
     }
 
     public String getUserName() {
@@ -23,11 +22,11 @@ public class SearchUserListViewItem {
         this.userName = userName;
     }
 
-    public String getUserLocation() {
+    public String getUserEmail() {
         return userLocation;
     }
 
-    public void setUserLocation(String userLocation) {
+    public void setUserEmail(String userLocation) {
         this.userLocation = userLocation;
     }
 }
