@@ -3,25 +3,30 @@ package com.pubak.econovation.amadium.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.pubak.econovation.amadium.ListViewItem.SearchUserListViewItem;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.dto.UserDTO;
-
-import java.io.BufferedInputStream;
+import java.io.InputStream;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListViewAdapter extends BaseAdapter{
+public class ListViewAdapter extends BaseAdapter {
     private ArrayList<SearchUserListViewItem> searchUserListViewItemList = new ArrayList<>();
+    final int CONN_TIME = 5000;
+    private String TAG = "ListViewAdapter : ";
+    private ImageView userImageView;
+    private TextView userNameView;
+    private TextView userEmailView;
+    private Bitmap myBitmap;
 
     public ListViewAdapter() {
 
@@ -47,30 +52,19 @@ public class ListViewAdapter extends BaseAdapter{
         final int pos = position;
         final Context context = parent.getContext();
 
-        if(convertView == null) {
+        if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.listview_item_search_user, parent, false);
         }
 
-        ImageView userImageView = (ImageView) convertView.findViewById(R.id.user_image);
-        TextView userNameView = (TextView) convertView.findViewById(R.id.user_name);
-        TextView userEmailView = (TextView) convertView.findViewById(R.id.user_email);
+        userImageView = (ImageView) convertView.findViewById(R.id.user_image);
+        userNameView = (TextView) convertView.findViewById(R.id.user_name);
+        userEmailView = (TextView) convertView.findViewById(R.id.user_email);
 
         SearchUserListViewItem searchUserListViewItem = searchUserListViewItemList.get(position);
 
 
-        try {
-            URL url = new URL(searchUserListViewItem.getUserImageUrl());
-            URLConnection conn = url.openConnection();
-            conn.connect();
-            BufferedInputStream bis = new BufferedInputStream(conn.getInputStream());
-            Bitmap bm = BitmapFactory.decodeStream(bis);
-            bis.close();
-            userImageView.setImageBitmap(bm);
-        } catch (Exception e) {
-        }
-
-
+        new LoadImage().execute(searchUserListViewItem.getUserImageUrl());
         userNameView.setText(searchUserListViewItem.getUserName());
         userEmailView.setText(searchUserListViewItem.getUserEmail());
 
@@ -96,6 +90,32 @@ public class ListViewAdapter extends BaseAdapter{
             item.setUserEmail(userDTO.getEmail());
 
             searchUserListViewItemList.add(item);
+        }
+    }
+
+    private class LoadImage extends AsyncTask<String, String, Bitmap> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Log.d(TAG, "onPreExecute: ");
+        }
+
+        protected Bitmap doInBackground(String... args) {
+            try {
+                myBitmap = BitmapFactory
+                        .decodeStream((InputStream) new URL(args[0])
+                                .getContent());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return myBitmap;
+        }
+
+        protected void onPostExecute(Bitmap image) {
+            if (image != null) {
+                userImageView.setImageBitmap(image);
+            } else {
+            }
         }
     }
 }

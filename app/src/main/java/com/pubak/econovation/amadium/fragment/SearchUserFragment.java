@@ -18,14 +18,9 @@ import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.adapter.ListViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SearchUserFragment extends Fragment {
-
     private static final String TAG = "SearchUserFragment";
     private FirebaseDatabase firebaseDatabase;
-    private List<UserDTO> userDTOs;
     private UserDTO userDTO;
 
     private ListView mListView;
@@ -33,40 +28,16 @@ public class SearchUserFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
+        ListViewAdapter adapter;
+        adapter = new ListViewAdapter();
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
         firebaseDatabase = firebaseDatabase.getInstance();
 
-        ListViewAdapter adapter;
-
-        adapter = new ListViewAdapter();
-
-        userDTOs = new ArrayList<>();
-
         mListView = (ListView) view.findViewById(R.id.listview_search_user);
 
-        //mListView.setAdapter(adapter);
         initDatabase(adapter);
 
         Log.d("SearchUserFragment", "onCreateView: " +adapter.getCount());
-
-//        new Handler().postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                //Do something after 100ms
-//            }
-//        }, 2000);
-//
-//        System.out.println(userDTOs.size());
-//        for (int i = 0; i < userDTOs.size(); i++) {
-//            adapter.addItem(userDTOs.get(i).getProfileImageUrl(), userDTOs.get(i).getUsername(), userDTOs.get(i).getEmail());
-//        }
-
-        // 더미 데이터
-//        adapter.addItem(null, "user1", "user1@gamil.com");
-//        adapter.addItem(null, "user2", "user1@gamil.com");
-//        adapter.addItem(null, "user3", "user1@gamil.com");
-//        adapter.addItem(null, "user4", "user1@gamil.com");
 
         return view;
     }
@@ -76,14 +47,9 @@ public class SearchUserFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    adapter.addItem(snapshot.getValue(UserDTO.class).getProfileImageUrl(), snapshot.getValue(UserDTO.class).getUsername(), snapshot.getValue(UserDTO.class).getEmail());
                     userDTO = snapshot.getValue(UserDTO.class);
-                    System.out.println("통과");
-                    //adapter.addItem(userDTO.getProfileImageUrl(), userDTO.getUsername(), userDTO.getEmail());
-
+                    adapter.addItem(userDTO.getProfileImageUrl(), userDTO.getUsername(), userDTO.getEmail());
                     Log.d(TAG, "onDataChange: ");
-                    System.out.println(userDTO.getUsername());
                 }
 
 
