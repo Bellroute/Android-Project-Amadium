@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         userName = findViewById(R.id.user_view);
+
         userName.setText(userEmail.substring(0, userEmail.lastIndexOf("@")));
 
         tabLayout = (TabLayout)findViewById(R.id.tablayout);

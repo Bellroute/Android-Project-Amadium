@@ -1,18 +1,14 @@
 package com.pubak.econovation.amadium.fragment;
 
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,64 +18,41 @@ import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.adapter.ListViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SearchUserFragment extends Fragment {
+    private static final String TAG = "SearchUserFragment";
     private FirebaseDatabase firebaseDatabase;
-    private List<UserDTO> userDTOs;
+    private UserDTO userDTO;
+
+    private ListView mListView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
+        ListViewAdapter adapter = new ListViewAdapter();
         firebaseDatabase = firebaseDatabase.getInstance();
 
-        ListViewAdapter adapter;
+        mListView = (ListView) view.findViewById(R.id.listview_search_user);
 
-        adapter = new ListViewAdapter();
+        initDatabase(adapter);
 
-        userDTOs = new ArrayList<>();
-
-        ListView listView = (ListView) view.findViewById(R.id.listview_search_user);
-        listView.setAdapter(adapter);
-
-        initDatabase();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Do something after 100ms
-            }
-        }, 2000);
-
-        System.out.println(userDTOs.size());
-        for (int i = 0; i < userDTOs.size(); i++) {
-            adapter.addItem(userDTOs.get(i).getProfileImageUrl(), userDTOs.get(i).getUsername(), userDTOs.get(i).getEmail());
-        }
-
-        // 더미 데이터
-        adapter.addItem(null, "user1", "user1@gamil.com");
-        adapter.addItem(null, "user2", "user1@gamil.com");
-        adapter.addItem(null, "user3", "user1@gamil.com");
-        adapter.addItem(null, "user4", "user1@gamil.com");
+        Log.d("SearchUserFragment", "onCreateView: " +adapter.getCount());
 
         return view;
     }
 
-    private void initDatabase() {
-
+    private void initDatabase(final ListViewAdapter adapter) {
         firebaseDatabase.getReference().child("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    UserDTO userDTO = snapshot.getValue(UserDTO.class);
-                    System.out.println("통과");
-                    userDTOs.add(userDTO);
-                    System.out.println(userDTOs.size());
+                    userDTO = snapshot.getValue(UserDTO.class);
+                    adapter.addItem(userDTO.getProfileImageUrl(), userDTO.getUsername(), userDTO.getEmail());
+                    Log.d(TAG, "onDataChange: ");
                 }
+
+
+                mListView.setAdapter(adapter);
 
             }
 
