@@ -45,6 +45,16 @@
         android:textColor="@android:color/black" />
 
     <EditText
+        android:id="@+id/editText_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ems="10"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:textColor="@android:color/black" />
+
+    <EditText
         android:id="@+id/editText_passWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,14 +65,15 @@
         android:textColor="@android:color/black" />
 
     <EditText
-        android:id="@+id/editText_name"
+        android:id="@+id/editText_check_passWord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:ems="10"
-        android:hint="Name"
-        android:inputType="textPersonName"
+        android:hint="check Password"
+        android:inputType="textPassword"
         android:textColor="@android:color/black" />
+
 
     <Button
         android:id="@+id/btn_join"

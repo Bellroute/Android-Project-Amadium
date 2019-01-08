@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -13,6 +14,8 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -52,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText editTextEmail;
     private EditText editTextPassword;
     private EditText editTextName;
+    private EditText editTextCheckPassword;
     private Button buttonJoin;
     private ImageView userImage;
     private Uri imagePath;
@@ -71,6 +75,37 @@ public class SignUpActivity extends AppCompatActivity {
         editTextEmail = (EditText) findViewById(R.id.editText_email);
         editTextPassword = (EditText) findViewById(R.id.editText_passWord);
         editTextName = (EditText) findViewById(R.id.editText_name);
+        editTextCheckPassword = (EditText) findViewById(R.id.editText_check_passWord);
+
+        editTextCheckPassword.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String password = editTextPassword.getText().toString();
+                String confirm = editTextCheckPassword.getText().toString();
+
+                if(password.equals(confirm)){
+                    editTextPassword.setBackgroundColor(Color.GREEN);
+                    editTextCheckPassword.setBackgroundColor(Color.GREEN);
+                }
+                else {
+                    editTextPassword.setBackgroundColor(Color.RED);
+                    editTextCheckPassword.setBackgroundColor(Color.RED);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
+        출처: http://javannspring.tistory.com/149 [JiGyeong's study room]
 
         userImage = (ImageView) findViewById(R.id.image_user_photo);
         userImage.setOnClickListener(new View.OnClickListener() {
