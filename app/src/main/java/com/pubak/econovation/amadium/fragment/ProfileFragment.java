@@ -53,6 +53,7 @@ public class ProfileFragment extends Fragment {
         deleteImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                userImage.setBackground(null);
                 userImage.setImageResource(R.drawable.ic_user);
             }
         });

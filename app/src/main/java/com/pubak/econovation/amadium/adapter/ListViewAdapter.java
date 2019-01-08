@@ -13,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.pubak.econovation.amadium.ListViewItem.SearchUserListViewItem;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.dto.UserDTO;
+
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -23,7 +25,6 @@ import java.util.List;
 
 public class ListViewAdapter extends BaseAdapter {
     private ArrayList<SearchUserListViewItem> searchUserListViewItemList = new ArrayList<>();
-    final int CONN_TIME = 5000;
     private String TAG = "ListViewAdapter : ";
     private ImageView userImageView;
     private TextView userNameView;
@@ -62,9 +63,6 @@ public class ListViewAdapter extends BaseAdapter {
         userImageView = (ImageView) convertView.findViewById(R.id.user_image);
         userNameView = (TextView) convertView.findViewById(R.id.user_name);
         userEmailView = (TextView) convertView.findViewById(R.id.user_email);
-
-        userImageView.setBackground(new ShapeDrawable(new OvalShape()));
-        userImageView.setClipToOutline(true);
 
         SearchUserListViewItem searchUserListViewItem = searchUserListViewItemList.get(position);
 
@@ -118,6 +116,8 @@ public class ListViewAdapter extends BaseAdapter {
 
         protected void onPostExecute(Bitmap image) {
             if (image != null) {
+                userImageView.setBackground(new ShapeDrawable(new OvalShape()));
+                userImageView.setClipToOutline(true);
                 userImageView.setImageBitmap(image);
             } else {
             }
