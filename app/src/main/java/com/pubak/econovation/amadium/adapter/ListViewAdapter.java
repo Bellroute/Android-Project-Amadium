@@ -3,6 +3,8 @@ package com.pubak.econovation.amadium.adapter;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -60,6 +62,9 @@ public class ListViewAdapter extends BaseAdapter {
         userImageView = (ImageView) convertView.findViewById(R.id.user_image);
         userNameView = (TextView) convertView.findViewById(R.id.user_name);
         userEmailView = (TextView) convertView.findViewById(R.id.user_email);
+
+        userImageView.setBackground(new ShapeDrawable(new OvalShape()));
+        userImageView.setClipToOutline(true);
 
         SearchUserListViewItem searchUserListViewItem = searchUserListViewItemList.get(position);
 

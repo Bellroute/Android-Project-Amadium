@@ -28,9 +28,8 @@ public class SearchUserFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        ListViewAdapter adapter;
-        adapter = new ListViewAdapter();
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
+        ListViewAdapter adapter = new ListViewAdapter();
         firebaseDatabase = firebaseDatabase.getInstance();
 
         mListView = (ListView) view.findViewById(R.id.listview_search_user);

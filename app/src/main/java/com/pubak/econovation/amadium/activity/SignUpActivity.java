@@ -1,7 +1,6 @@
 package com.pubak.econovation.amadium.activity;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -49,7 +48,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText editTextPassword;
     private EditText editTextName;
     private Button buttonJoin;
-    private ImageView userImgae;
+    private ImageView userImage;
     private Uri imagePath;
 
     @Override
@@ -67,8 +66,8 @@ public class SignUpActivity extends AppCompatActivity {
         editTextPassword = (EditText) findViewById(R.id.editText_passWord);
         editTextName = (EditText) findViewById(R.id.editText_name);
 
-        userImgae = (ImageView) findViewById(R.id.image_user_photo);
-        userImgae.setOnClickListener(new View.OnClickListener() {
+        userImage = (ImageView) findViewById(R.id.image_user_photo);
+        userImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent();
@@ -167,7 +166,7 @@ public class SignUpActivity extends AppCompatActivity {
                     Bitmap img = BitmapFactory.decodeStream(in);
                     in.close();
                     // 이미지 표시
-                    userImgae.setImageBitmap(img);
+                    userImage.setImageBitmap(img);
                     imagePath = data.getData();
                 } catch (Exception e) {
                     e.printStackTrace();
