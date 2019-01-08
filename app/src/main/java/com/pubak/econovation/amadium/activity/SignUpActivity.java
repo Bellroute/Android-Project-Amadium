@@ -5,11 +5,15 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ShapeDrawable;
+import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +37,7 @@ import com.gun0912.tedpermission.TedPermission;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -50,6 +55,7 @@ public class SignUpActivity extends AppCompatActivity {
     private Button buttonJoin;
     private ImageView userImage;
     private Uri imagePath;
+    private Bitmap img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -147,7 +153,7 @@ public class SignUpActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // 회원가입 성공시
                             Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
-                            upload(imagePath);
+                            upload();
                             finish();
                         } else {
                             Toast.makeText(SignUpActivity.this, "이미 가입된 계정입니다.", Toast.LENGTH_LONG).show();
@@ -163,11 +169,12 @@ public class SignUpActivity extends AppCompatActivity {
                 try {
                     // 선택한 이미지에서 비트맵 생성
                     InputStream in = getContentResolver().openInputStream(data.getData());
-                    Bitmap img = BitmapFactory.decodeStream(in);
+                    img = BitmapFactory.decodeStream(in);
                     in.close();
                     // 이미지 표시
                     userImage.setImageBitmap(img);
-                    imagePath = data.getData();
+                    userImage.setBackground(new ShapeDrawable(new OvalShape()));
+                    userImage.setClipToOutline(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -175,61 +182,27 @@ public class SignUpActivity extends AppCompatActivity {
         }
     }
 
-    private void upload(Uri uri) {
-        StorageReference storageRef = firebaseStorage.getReferenceFromUrl("gs://amadium-632d8.appspot.com/");
-        File file = new File(uri.toString());
-        System.out.println(file.toString());
-        final StorageReference riversRef = storageRef.child("profile_image/" + Uri.fromFile(file).getLastPathSegment());
-        final UploadTask uploadTask = riversRef.putFile(Uri.fromFile(file));
+    private void upload() {
+        StorageReference storageRef = firebaseStorage.getReferenceFromUrl("gs://amadium-632d8.appspot.com/profile_image").child(img.toString());
 
+        userImage.setDrawingCacheEnabled(true);
+        userImage.buildDrawingCache();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        img.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        UploadTask uploadTask = storageRef.putBytes(data);
         uploadTask.addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
+                // Handle unsuccessful uploads
             }
         }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                    @Override
-                    public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                        if (!task.isSuccessful()) {
-                            throw task.getException();
-                        }
-
-                        // Continue with the task to get the download URL
-                        return riversRef.getDownloadUrl();
-                    }
-                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Uri> task) {
-                        if (task.isSuccessful()) {
-                            Uri downloadUri = task.getResult();
-
-                            UserDTO userDTO = new UserDTO();
-                            userDTO.setProfileImageUrl(downloadUri.toString());
-                            userDTO.setUsername(editTextName.getText().toString());
-                            userDTO.setEmail(firebaseAuth.getCurrentUser().getEmail());
-
-                            firebaseDatabase.getReference().child("users").setValue(userDTO);
-                        } else {
-                            // Handle failures
-                            // ...
-                        }
-                    }
-                });
+                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+                // ...
             }
         });
-    }
-
-    private String getPath(Uri uri) {
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor c = getContentResolver().query(uri, proj, null, null, null);
-        int index = c.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-        c.moveToFirst();
-        String path = c.getString(index);
-
-        return path;
     }
 }
