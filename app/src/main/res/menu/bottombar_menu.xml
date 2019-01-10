@@ -19,11 +19,6 @@
         android:title="@string/rank" />
 
     <item
-        android:id="@+id/menuItem_bottomBar_results"
-        android:icon="@drawable/ic_results"
-        android:title="@string/result"/>
-
-    <item
         android:id="@+id/menuItem_bottomBar_search"
         android:icon="@drawable/ic_search"
         android:title="@string/search" />

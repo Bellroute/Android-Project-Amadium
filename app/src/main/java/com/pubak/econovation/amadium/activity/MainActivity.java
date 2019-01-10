@@ -1,29 +1,18 @@
 package com.pubak.econovation.amadium.activity;
 
 import android.annotation.SuppressLint;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseUser;
 import com.pubak.econovation.amadium.adapter.TabPagerAdapter;
-import com.pubak.econovation.amadium.fragment.MatchListFragment;
-import com.pubak.econovation.amadium.fragment.ProfileFragment;
 import com.pubak.econovation.amadium.R;
-import com.pubak.econovation.amadium.fragment.RankListFragment;
-import com.pubak.econovation.amadium.fragment.ResultListFragment;
-import com.pubak.econovation.amadium.fragment.SearchUserFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private TextView userName;
+    private TextView pageName;
     private static String userEmail;
     private static String userId;
     private TabLayout tabLayout;
@@ -34,15 +23,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        pageName = findViewById(R.id.user_view);
 
-        userName = findViewById(R.id.user_view);
-
-        userName.setText(userEmail.substring(0, userEmail.lastIndexOf("@")));
-
-        tabLayout = (TabLayout)findViewById(R.id.tablayout);
+        tabLayout = (TabLayout) findViewById(R.id.tablayout);
         buildTabLayout(tabLayout);
 
-        viewPager = (ViewPager)findViewById(R.id.viewpager);
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
 
         TabPagerAdapter pagerAdapter = new TabPagerAdapter(getSupportFragmentManager(), tabLayout.getTabCount());
         viewPager.setAdapter(pagerAdapter);
@@ -64,13 +50,14 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
+
 
     private void buildTabLayout(TabLayout tabLayout) {
         this.tabLayout.addTab(this.tabLayout.newTab().setIcon(R.drawable.ic_user));
         this.tabLayout.addTab(this.tabLayout.newTab().setIcon(R.drawable.ic_list));
         this.tabLayout.addTab(this.tabLayout.newTab().setIcon(R.drawable.ic_ranking));
-        this.tabLayout.addTab(this.tabLayout.newTab().setIcon(R.drawable.ic_results));
         this.tabLayout.addTab(this.tabLayout.newTab().setIcon(R.drawable.ic_search));
         this.tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
     }

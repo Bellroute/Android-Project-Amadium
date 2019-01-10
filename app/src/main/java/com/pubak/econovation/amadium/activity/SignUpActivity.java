@@ -2,15 +2,12 @@ package com.pubak.econovation.amadium.activity;
 
 import android.Manifest;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
 import android.net.Uri;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -24,13 +21,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -41,7 +38,6 @@ import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
@@ -50,6 +46,7 @@ public class SignUpActivity extends AppCompatActivity {
     // 비밀번호 정규식(최소 8자리에 숫자, 문자, 특수문자가 1개 이상 포함)
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^(?=.*[a-zA-Z])(?=.*[~!@#$%^*+=-])(?=.*[0-9]).{8,16}$");
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser user;
     private FirebaseStorage firebaseStorage;
     private FirebaseDatabase firebaseDatabase;
     private EditText editTextEmail;
@@ -58,8 +55,9 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText editTextCheckPassword;
     private Button buttonJoin;
     private ImageView userImage;
-    private Uri imagePath;
+    private Uri url;
     private Bitmap img;
+    private String TAG = "SignUpActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,11 +86,10 @@ public class SignUpActivity extends AppCompatActivity {
                 String password = editTextPassword.getText().toString();
                 String confirm = editTextCheckPassword.getText().toString();
 
-                if(password.equals(confirm)){
+                if (password.equals(confirm)) {
                     editTextPassword.setBackgroundColor(Color.GREEN);
                     editTextCheckPassword.setBackgroundColor(Color.GREEN);
-                }
-                else {
+                } else {
                     editTextPassword.setBackgroundColor(Color.RED);
                     editTextCheckPassword.setBackgroundColor(Color.RED);
                 }
@@ -103,9 +100,6 @@ public class SignUpActivity extends AppCompatActivity {
 
             }
         });
-
-
-        출처: http://javannspring.tistory.com/149 [JiGyeong's study room]
 
         userImage = (ImageView) findViewById(R.id.image_user_photo);
         userImage.setOnClickListener(new View.OnClickListener() {
@@ -218,7 +212,8 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void upload() {
-        StorageReference storageRef = firebaseStorage.getReferenceFromUrl("gs://amadium-632d8.appspot.com/profile_image").child(img.toString());
+        user = firebaseAuth.getCurrentUser();
+        final StorageReference storageRef = firebaseStorage.getReferenceFromUrl("gs://amadium-632d8.appspot.com/profile_image").child(user.getUid());
 
         userImage.setDrawingCacheEnabled(true);
         userImage.buildDrawingCache();
@@ -237,7 +232,22 @@ public class SignUpActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!urlTask.isSuccessful());
+                url = urlTask.getResult();
+                uploadUserInfo(url);
+                Log.d(TAG, "onSuccess: " + url);
             }
         });
+    }
+
+    private void uploadUserInfo(Uri imagePath) {
+
+        UserDTO userDTO = new UserDTO();
+        userDTO.setUsername(editTextName.getText().toString());
+        userDTO.setProfileImageUrl(String.valueOf(imagePath));
+        userDTO.setEmail(editTextEmail.getText().toString());
+
+        firebaseDatabase.getReference().child("users").child(user.getUid()).setValue(userDTO);
     }
 }
