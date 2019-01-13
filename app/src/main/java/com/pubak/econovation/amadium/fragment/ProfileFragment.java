@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -30,8 +31,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.pubak.econovation.amadium.R;
+import com.pubak.econovation.amadium.activity.MainActivity;
 import com.pubak.econovation.amadium.adapter.ListViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
+import com.pubak.econovation.amadium.utils.LoadImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,13 +57,13 @@ public class ProfileFragment extends Fragment {
     private FirebaseDatabase firebaseDatabase;
     private Bitmap image;
     private String userUid;
-    private FirebaseUser user;
+    public static FirebaseUser user;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
-        user = firebaseAuth.getInstance().getCurrentUser();
+        user = MainActivity.getCurrentUser();
         userUid = user.getUid();
         userImage = (ImageView) view.findViewById(R.id.image_user_profile);
         deleteImage = (TextView) view.findViewById(R.id.textView_profile_delete);
@@ -79,33 +82,8 @@ public class ProfileFragment extends Fragment {
                 userTier.setText(userDTO.getEmail());
 
                 if (userDTO.getProfileImageUrl() != null) {
-                    new LoadImage().execute(userDTO.getProfileImageUrl());
+                    new LoadImage(userImage).execute(userDTO.getProfileImageUrl());
                 }
-
-//                if (userDTO.getProfileImageUrl() != null) {
-//                    Thread mThread = new Thread() {
-//                        @Override
-//                        public void run() {
-//                            try {
-//                                URL url = new URL(userDTO.getProfileImageUrl());
-//                                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-//                                conn.setDoInput(true);
-//                                conn.connect();
-//
-//                                InputStream is = conn.getInputStream();
-//                                image = BitmapFactory.decodeStream(is);
-//                                Log.d(TAG, "run: thread");
-//                            } catch (MalformedURLException ee) {
-//                                ee.printStackTrace();
-//                                Log.d(TAG, "MalformedURLException: ");
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                                Log.d(TAG, "IOException: ");
-//                            }
-//                        }
-//                    };
-//                    mThread.start();
-//                }
             }
 
             @Override
@@ -178,37 +156,11 @@ public class ProfileFragment extends Fragment {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
                 // ...
-                Uri url = taskSnapshot.getUploadSessionUri();
+                Task<Uri> urlTask = taskSnapshot.getStorage().getDownloadUrl();
+                while (!urlTask.isSuccessful());
+                Uri url = urlTask.getResult();
                 firebaseDatabase.getReference().child("users").child(user.getUid()).child("profileImageUrl").setValue(String.valueOf(url));
             }
         });
-    }
-
-    private class LoadImage extends AsyncTask<String, String, Bitmap> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            Log.d(TAG, "onPreExecute: ");
-        }
-
-        protected Bitmap doInBackground(String... args) {
-            try {
-                image = BitmapFactory
-                        .decodeStream((InputStream) new URL(args[0])
-                                .getContent());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return image;
-        }
-
-        protected void onPostExecute(Bitmap image) {
-            if (image != null) {
-                userImage.setBackground(new ShapeDrawable(new OvalShape()));
-                userImage.setClipToOutline(true);
-                userImage.setImageBitmap(image);
-            } else {
-            }
-        }
     }
 }

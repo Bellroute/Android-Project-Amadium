@@ -60,7 +60,6 @@ public class LogInActivity extends AppCompatActivity {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
                     Intent intent = new Intent(LogInActivity.this, MainActivity.class);
-                    MainActivity.getCurrentUser(user);
                     startActivity(intent);
                     finish();
                 } else {

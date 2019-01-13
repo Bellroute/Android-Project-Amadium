@@ -7,14 +7,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.pubak.econovation.amadium.adapter.TabPagerAdapter;
 import com.pubak.econovation.amadium.R;
 
 public class MainActivity extends AppCompatActivity {
     private TextView pageName;
-    private static String userEmail;
-    private static String userId;
+    private static FirebaseUser user;
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         pageName = findViewById(R.id.user_view);
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         tabLayout = (TabLayout) findViewById(R.id.tablayout);
         buildTabLayout(tabLayout);
@@ -63,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // LoginActivity 에서 사용자 정보 받아오는 메소드
-    public static void getCurrentUser(FirebaseUser user) {
-        userEmail = user.getEmail();
-        userId = user.getUid();
+    public static FirebaseUser getCurrentUser() {
+        return user;
     }
 }
