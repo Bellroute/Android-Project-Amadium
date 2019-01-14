@@ -4,7 +4,6 @@ public class UserDTO {
     private String username = "";
     private String profileImageUrl = "";
     private String email = "";
-    private String location = "";
     private String sport = "";
     private String tier = "";
     private double latitude;
@@ -24,14 +23,6 @@ public class UserDTO {
 
     public void setLongitude(double longitude) {
         this.longitude = longitude;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getSport() {

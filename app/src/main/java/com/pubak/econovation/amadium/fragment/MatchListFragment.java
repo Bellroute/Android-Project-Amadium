@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,6 +19,7 @@ import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.activity.MainActivity;
 import com.pubak.econovation.amadium.adapter.RecyclerViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,8 +44,9 @@ public class MatchListFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
 
         userDTOList = new ArrayList<>();
-        adapter = new RecyclerViewAdapter(userDTOList);
+        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList);
         initDatabase();
+
         mRecyclerView.setAdapter(adapter);
 
         Log.d(TAG, "onCreateView: ");
@@ -51,16 +54,47 @@ public class MatchListFragment extends Fragment {
         return view;
     }
 
-    private void initDatabase() {
+    private void initDatabaseList(final String uId) {
         firebaseDatabase.getReference().child("users").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
-                if (!userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
+                if (uId.equals(dataSnapshot.getKey()) && !userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
                     userDTOList.add(userDTO);
                 }
                 Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
                 adapter.notifyItemInserted(userDTOList.size() - 1);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void initDatabase() {
+        Log.d(TAG, "initDatabase: user " + MainActivity.getCurrentUser().getUid());
+        firebaseDatabase.getReference().child("user-messages").child(MainActivity.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Log.d(TAG, "initDatabase: " + dataSnapshot.getKey());
+                initDatabaseList(dataSnapshot.getKey());
             }
 
             @Override
