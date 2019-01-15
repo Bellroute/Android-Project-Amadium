@@ -30,6 +30,7 @@ public class MatchListFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<UserDTO> userDTOList;
+    private List<String> uidList;
 
 
     @Nullable
@@ -43,8 +44,9 @@ public class MatchListFragment extends Fragment {
         layoutManager = new LinearLayoutManager(this.getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
 
+        uidList = new ArrayList<>();
         userDTOList = new ArrayList<>();
-        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList);
+        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList, uidList);
         initDatabase();
 
         mRecyclerView.setAdapter(adapter);
@@ -61,9 +63,10 @@ public class MatchListFragment extends Fragment {
                 UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
                 if (uId.equals(dataSnapshot.getKey()) && !userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
                     userDTOList.add(userDTO);
+                    uidList.add(uId);
                 }
-                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
                 adapter.notifyItemInserted(userDTOList.size() - 1);
+                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
             }
 
             @Override

@@ -1,7 +1,7 @@
 package com.pubak.econovation.amadium.ListViewItem;
 
 
-public class SearchUserListViewItem {
+public class MatchListViewItem {
     private String userImageUrl;
     private String userName;
     private String userEmail;

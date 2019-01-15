@@ -42,7 +42,7 @@ public class SearchUserFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
 
         userDTOList = new ArrayList<>();
-        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList);
+        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList, null);
         initDatabase();
         mRecyclerView.setAdapter(adapter);
 
