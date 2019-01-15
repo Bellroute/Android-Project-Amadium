@@ -12,6 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -37,6 +38,7 @@ public class ChatActivity extends AppCompatActivity {
     private String uid;
     private List<MessagesDTO> messagesDTOList;
     private String chatUserName;
+    private String userImageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,9 +55,10 @@ public class ChatActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         uid = bundle.getString("uid");
         chatUserName = bundle.getString("userName");
+        userImageURL = bundle.getString("userImageURL");
 
         messagesDTOList = new ArrayList<>();
-        adapter = new RecyclerViewChatAdapter(messagesDTOList);
+        adapter = new RecyclerViewChatAdapter(messagesDTOList, userImageURL);
         initDatabase();
 
         chatRecyclerView.setAdapter(adapter);
@@ -69,8 +72,12 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = editText.getText().toString();
-                uploadDatabase(text);
-                editText.getText().clear();
+                if (text.equals("") || text.isEmpty()) {
+                    Toast.makeText(ChatActivity.this,"내용을 입력해 주세요", Toast.LENGTH_LONG).show();
+                } else {
+                    uploadDatabase(text);
+                    editText.getText().clear();
+                }
             }
         });
     }
