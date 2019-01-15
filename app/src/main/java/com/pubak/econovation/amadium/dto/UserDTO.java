@@ -8,6 +8,15 @@ public class UserDTO {
     private String tier = "";
     private double latitude;
     private double longitude;
+    private String winTieLose;
+
+    public String getWinTieLose() {
+        return winTieLose;
+    }
+
+    public void setWinTieLose(String winTieLose) {
+        this.winTieLose = winTieLose;
+    }
 
     public double getLatitude() {
         return latitude;

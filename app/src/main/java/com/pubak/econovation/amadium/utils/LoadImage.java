@@ -39,9 +39,9 @@ public class LoadImage extends AsyncTask<String, String, Bitmap> {
 
     protected void onPostExecute(Bitmap image) {
         if (image != null) {
+            userImage.setImageBitmap(image);
             userImage.setBackground(new ShapeDrawable(new OvalShape()));
             userImage.setClipToOutline(true);
-            userImage.setImageBitmap(image);
         } else {
         }
     }

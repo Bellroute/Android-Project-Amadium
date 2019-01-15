@@ -12,7 +12,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -38,6 +38,7 @@ public class ChatActivity extends AppCompatActivity {
     private String uid;
     private List<MessagesDTO> messagesDTOList;
     private String chatUserName;
+    private String userImageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,9 +55,10 @@ public class ChatActivity extends AppCompatActivity {
         Bundle bundle = getIntent().getExtras();
         uid = bundle.getString("uid");
         chatUserName = bundle.getString("userName");
+        userImageURL = bundle.getString("userImageURL");
 
         messagesDTOList = new ArrayList<>();
-        adapter = new RecyclerViewChatAdapter(messagesDTOList);
+        adapter = new RecyclerViewChatAdapter(messagesDTOList, userImageURL);
         initDatabase();
 
         chatRecyclerView.setAdapter(adapter);
@@ -70,17 +72,20 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String text = editText.getText().toString();
-                uploadDatabase(text);
+                if (text.equals("") || text.isEmpty()) {
+                    Toast.makeText(ChatActivity.this,"내용을 입력해 주세요", Toast.LENGTH_LONG).show();
+                } else {
+                    uploadDatabase(text);
+                    editText.getText().clear();
+                }
             }
         });
     }
 
-    @SuppressLint("SimpleDateFormat")
     private void uploadDatabase(String text) {
         MessagesDTO messagesDTO = new MessagesDTO();
         messagesDTO.setFromId(MainActivity.getCurrentUser().getUid());
         messagesDTO.setText(text);
-        // nsdate 문제
 
         Log.d(TAG, "uploadDatabase: parsing timestamp to double" + Converter.getCurrentTimeStamp());
         messagesDTO.setTimestamp(Converter.getCurrentTimeStamp());
@@ -89,6 +94,7 @@ public class ChatActivity extends AppCompatActivity {
         String pushId = firebaseDatabase.getReference().child("user-messages").push().getKey();
         Log.d(TAG, "uploadDatabase: pushId: " + pushId);
         firebaseDatabase.getReference().child("user-messages").child(MainActivity.getCurrentUser().getUid()).child(uid).child(pushId).setValue(1);
+        firebaseDatabase.getReference().child("user-messages").child(uid).child(MainActivity.getCurrentUser().getUid()).child(pushId).setValue(1);
         firebaseDatabase.getReference().child("messages").child(pushId).setValue(messagesDTO);
     }
 

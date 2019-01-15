@@ -65,6 +65,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
                 intent.putExtra("uid", uidList.get(position));
                 intent.putExtra("userName", dataSet.get(position).getUsername());
+                intent.putExtra("userImageURL", dataSet.get(position).getProfileImageUrl());
                 v.getContext().startActivity(intent);
             }
         });
