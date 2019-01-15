@@ -4,61 +4,83 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.pubak.econovation.amadium.R;
-import com.pubak.econovation.amadium.adapter.ListViewAdapter;
+import com.pubak.econovation.amadium.activity.MainActivity;
+import com.pubak.econovation.amadium.adapter.RecyclerViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SearchUserFragment extends Fragment {
     private static final String TAG = "SearchUserFragment";
     private FirebaseDatabase firebaseDatabase;
-    private UserDTO userDTO;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter adapter;
+    private RecyclerView.LayoutManager layoutManager;
+    private List<UserDTO> userDTOList;
 
-    private ListView mListView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
-        ListViewAdapter adapter = new ListViewAdapter();
         firebaseDatabase = firebaseDatabase.getInstance();
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_search_user);
+        mRecyclerView.setHasFixedSize(true);
 
-        mListView = (ListView) view.findViewById(R.id.listview_search_user);
+        layoutManager = new LinearLayoutManager(this.getActivity());
+        mRecyclerView.setLayoutManager(layoutManager);
 
-        initDatabase(adapter);
+        userDTOList = new ArrayList<>();
+        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList, null);
+        initDatabase();
+        mRecyclerView.setAdapter(adapter);
 
-        Log.d("SearchUserFragment", "onCreateView: " +adapter.getCount());
+        Log.d(TAG, "onCreateView: ");
 
         return view;
     }
 
-    private void initDatabase(final ListViewAdapter adapter) {
-        firebaseDatabase.getReference().child("users").addListenerForSingleValueEvent(new ValueEventListener() {
+    private void initDatabase() {
+        firebaseDatabase.getReference().child("users").addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    userDTO = snapshot.getValue(UserDTO.class);
-                    adapter.addItem(userDTO.getProfileImageUrl(), userDTO.getUsername(), userDTO.getEmail());
-                    Log.d(TAG, "onDataChange: ");
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                if (!userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
+                    userDTOList.add(userDTO);
                 }
+                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
+                adapter.notifyItemInserted(userDTOList.size() - 1);
+            }
 
-
-                mListView.setAdapter(adapter);
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d("ERROR", "DB 접근 실패 in AdminPostFragment" + databaseError.getMessage());
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

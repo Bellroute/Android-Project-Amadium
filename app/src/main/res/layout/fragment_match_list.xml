@@ -5,10 +5,11 @@
     android:layout_height="match_parent"
     tools:context=".fragment.MatchListFragment">
 
-    <TextView
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycler_match_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Match Fragment"
-        android:textSize="30sp"/>
+        />
+
 
 </RelativeLayout>

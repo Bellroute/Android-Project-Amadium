@@ -1,9 +1,45 @@
 package com.pubak.econovation.amadium.dto;
 
 public class UserDTO {
-    private String username;
-    private String profileImageUrl;
-    private String email;
+    private String username = "";
+    private String profileImageUrl = "";
+    private String email = "";
+    private String sport = "";
+    private String tier = "";
+    private double latitude;
+    private double longitude;
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getSport() {
+        return sport;
+    }
+
+    public void setSport(String sport) {
+        this.sport = sport;
+    }
+
+    public String getTier() {
+        return tier;
+    }
+
+    public void setTier(String tier) {
+        this.tier = tier;
+    }
 
     public String getUsername() {
         return username;
