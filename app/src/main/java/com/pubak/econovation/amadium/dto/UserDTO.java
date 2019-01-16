@@ -4,8 +4,8 @@ public class UserDTO {
     private String username = "";
     private String profileImageUrl = "";
     private String email = "";
-    private String sport = "";
-    private String tier = "";
+    private String sport = "스포츠 선택 필요";
+    private String tier = "플레이를 해야 합니다.";
     private double latitude;
     private double longitude;
     private String winTieLose;

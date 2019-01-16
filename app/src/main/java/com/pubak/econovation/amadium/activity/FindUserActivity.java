@@ -31,6 +31,7 @@ public class FindUserActivity extends AppCompatActivity {
     private TextView textViewCancel;
     private List<UserDTO> userDTOList;
     private RecyclerViewFindUserAdapter adapter;
+    private List<String> uidList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +55,8 @@ public class FindUserActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         userDTOList = new ArrayList<>();
-        adapter = new RecyclerViewFindUserAdapter(userDTOList);
+        uidList = new ArrayList<>();
+        adapter = new RecyclerViewFindUserAdapter(userDTOList, uidList);
 
         recyclerView.setAdapter(adapter);
 
@@ -101,6 +103,7 @@ public class FindUserActivity extends AppCompatActivity {
                 UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
                 if (!userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
                     userDTOList.add(userDTO);
+                    uidList.add(dataSnapshot.getKey());
                 }
                 Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
                 adapter.notifyItemInserted(userDTOList.size() - 1);
