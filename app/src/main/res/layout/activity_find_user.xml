@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="#cccccc"
+    android:layout_height="match_parent"
+    tools:context=".activity.FindUserActivity">
+
+    <EditText
+        android:layout_margin="10dp"
+        android:id="@+id/editText_find"
+        android:layout_width="match_parent"
+        android:hint="찾으려는 상대의 이메일"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:textSize="15sp"
+        android:drawableLeft="?android:attr/actionModeWebSearchDrawable"
+        android:background="@drawable/edittext_box"
+        android:layout_toStartOf="@+id/textView_cancel"/>
+
+    <TextView
+        android:id="@+id/textView_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="18dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentEnd="true"
+        android:text="Cancel"
+        android:textColor="@android:color/holo_blue_dark" />
+
+    <android.support.v7.widget.RecyclerView
+        android:background="@android:color/white"
+        android:layout_below="@+id/editText_find"
+        android:id="@+id/recycler_find_user"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>
