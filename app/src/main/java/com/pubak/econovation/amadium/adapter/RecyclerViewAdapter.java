@@ -2,7 +2,6 @@ package com.pubak.econovation.amadium.adapter;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Parcelable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,7 +11,6 @@ import android.widget.TextView;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.activity.ChatActivity;
 import com.pubak.econovation.amadium.dto.UserDTO;
-import com.pubak.econovation.amadium.fragment.MatchListFragment;
 import com.pubak.econovation.amadium.utils.LoadImage;
 
 import java.util.List;
@@ -46,7 +44,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public RecyclerViewAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.listview_item_match_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.layout_match_list, parent, false);
         return new ViewHolder(view);
     }
 

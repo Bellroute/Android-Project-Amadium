@@ -1,6 +1,7 @@
 package com.pubak.econovation.amadium.activity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         findPlayer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(getApplicationContext(), "클릭", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(MainActivity.this, FindUserActivity.class);
+                startActivity(intent);
             }
         });
 
