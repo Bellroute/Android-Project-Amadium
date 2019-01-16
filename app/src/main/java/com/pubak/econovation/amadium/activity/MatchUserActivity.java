@@ -17,39 +17,44 @@ public class MatchUserActivity extends AppCompatActivity {
     private TextView userSports;
     private TextView userTier;
     private TextView match;
-    private String uid;
+    private String email;
     private String name;
     private String sports;
     private String tier;
     private FirebaseDatabase firebaseDatabase;
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_match_user);
-        firebaseDatabase = firebaseDatabase.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         Bundle bundle = getIntent().getExtras();
         uid = bundle.getString("uid");
+        email = bundle.getString("email");
         name = bundle.getString("userName");
         sports = bundle.getString("userSports");
         tier = bundle.getString("userTier");
 
-        userName = (TextView) findViewById(R.id.textView_user);
+        userName = findViewById(R.id.textView_user);
         userName.setText(name);
 
-        userSports = (TextView) findViewById(R.id.textView_sports);
-        userSports.setText("스포츠: " + sports);
+        userSports = findViewById(R.id.textView_sports);
+        userSports.setText(sports);
 
-        userTier = (TextView) findViewById(R.id.textView_tier);
-        userTier.setText("티어: " + tier);
+        userTier = findViewById(R.id.textView_tier);
+        userTier.setText(tier);
 
-        match = (TextView) findViewById(R.id.textView_match);
+        match = findViewById(R.id.textView_match);
+        if (email.equals(MainActivity.getCurrentUser().getEmail())) {
+            match.setVisibility(View.INVISIBLE);
+        }
         match.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 uploadDatabase();
-                match.setVisibility(v.INVISIBLE);
+                match.setVisibility(View.INVISIBLE);
                 Toast.makeText(v.getContext(), "매치리스트를 확인하세요", Toast.LENGTH_SHORT).show();
             }
         });

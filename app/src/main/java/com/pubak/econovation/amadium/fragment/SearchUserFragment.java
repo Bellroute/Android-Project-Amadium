@@ -1,5 +1,6 @@
 package com.pubak.econovation.amadium.fragment;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.support.annotation.NonNull;
@@ -29,25 +30,28 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.activity.MainActivity;
+import com.pubak.econovation.amadium.activity.MatchUserActivity;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.w3c.dom.Text;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "SearchUserFragment";
     private GoogleMap map;
     private MapView mapView;
-    private List<UserDTO> dataSet;
     private UserDTO user;
     private FirebaseDatabase firebaseDatabase;
+    private Map<String, String> data;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
-        dataSet = new ArrayList<>();
         firebaseDatabase = firebaseDatabase.getInstance();
+        data = new HashMap<String, String>();
 
         return view;
     }
@@ -61,19 +65,35 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
         initDatabase();
     }
 
-    private void getMarkers(UserDTO userDTO) {
+    private void getMarkers(final UserDTO userDTO) {
         Log.d(TAG, "getMarkers: userDTO" + userDTO);
-        LatLng markValue = new LatLng(userDTO.getLatitude(), userDTO.getLongitude());
+        final LatLng markValue = new LatLng(userDTO.getLatitude(), userDTO.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
 
         markerOptions.position(markValue)
                 .title(userDTO.getUsername())
-                .snippet("스포츠: " + userDTO.getSport() + "\n티어: " + userDTO.getTier());
+                .snippet("스포츠: " + userDTO.getSport() + "\n티어: " + userDTO.getTier() + "\n" + userDTO.getEmail());
 
         if (userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
         }
         map.addMarker(markerOptions).showInfoWindow();
+
+        map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                Intent intent = new Intent(getContext(), MatchUserActivity.class);
+
+                String[] split = marker.getSnippet().split("\n");
+                Log.d(TAG, "onInfoWindowClick: split" + split);
+                intent.putExtra("uid", data.get(split[2]));
+                intent.putExtra("email", split[2]);
+                intent.putExtra("userName", marker.getTitle());
+                intent.putExtra("userSports", split[0]);
+                intent.putExtra("userTier", split[1]);
+                getContext().startActivity(intent);
+            }
+        });
 
         map.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
             @Override
@@ -110,6 +130,7 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
             map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(user.getLatitude(), user.getLongitude())));
             map.animateCamera(CameraUpdateFactory.zoomTo(14));
         }
+
     }
 
     @Override
@@ -128,9 +149,9 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
-                dataSet.add(userDTO);
-                Log.d(TAG, "onChildAdded: userDTO.getEmail(): " + userDTO.getEmail());
+                Log.d(TAG, "onChildAdded: dataSnapShot get key: " + dataSnapshot.getKey());
                 getMarkers(userDTO);
+                data.put(userDTO.getEmail(), dataSnapshot.getKey());
             }
 
             @Override

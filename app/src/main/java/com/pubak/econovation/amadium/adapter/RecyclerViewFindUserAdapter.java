@@ -48,6 +48,7 @@ public class RecyclerViewFindUserAdapter extends RecyclerView.Adapter<RecyclerVi
                 Log.d(TAG, "onClick: dataSet: " + dataSet.get(position));
                 Intent intent = new Intent(v.getContext(), MatchUserActivity.class);
                 intent.putExtra("uid", uidList.get(position));
+                intent.putExtra("email", dataSet.get(position).getEmail());
                 intent.putExtra("userName", dataSet.get(position).getUsername());
                 intent.putExtra("userSports", dataSet.get(position).getSport());
                 intent.putExtra("userTier", dataSet.get(position).getTier());
