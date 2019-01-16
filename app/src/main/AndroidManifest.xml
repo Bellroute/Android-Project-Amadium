@@ -17,6 +17,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBex_2Vm1cMyHZ46wvPpJtTHIgngFUPZWw" />
+
+
         <activity android:name=".activity.LogInActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,9 +32,8 @@
         </activity>
         <activity android:name=".activity.SignUpActivity" />
         <activity android:name=".activity.MainActivity" />
-        <activity android:name=".fragment.SearchUserFragment" />
         <activity android:name=".activity.ChatActivity" />
-        <activity android:name=".activity.FindUserActivity"></activity>
+        <activity android:name=".activity.FindUserActivity"/>
     </application>
 
 </manifest>

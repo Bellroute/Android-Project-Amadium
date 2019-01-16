@@ -10,6 +10,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapsInitializer;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -18,70 +27,50 @@ import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.activity.MainActivity;
 import com.pubak.econovation.amadium.adapter.RecyclerViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchUserFragment extends Fragment {
+public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "SearchUserFragment";
-    private FirebaseDatabase firebaseDatabase;
-    private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter adapter;
-    private RecyclerView.LayoutManager layoutManager;
-    private List<UserDTO> userDTOList;
-
+    private GoogleMap map;
+    private MapView mapView;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
-        firebaseDatabase = firebaseDatabase.getInstance();
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.recycler_search_user);
-        mRecyclerView.setHasFixedSize(true);
-
-        layoutManager = new LinearLayoutManager(this.getActivity());
-        mRecyclerView.setLayoutManager(layoutManager);
-
-        userDTOList = new ArrayList<>();
-        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList, null);
-        initDatabase();
-        mRecyclerView.setAdapter(adapter);
-
-        Log.d(TAG, "onCreateView: ");
-
         return view;
     }
 
-    private void initDatabase() {
-        firebaseDatabase.getReference().child("users").addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
-                if (!userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
-                    userDTOList.add(userDTO);
-                }
-                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
-                adapter.notifyItemInserted(userDTOList.size() - 1);
-            }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        MapsInitializer.initialize(getContext());
+        map = googleMap;
+        map.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            }
+        LatLng SEOUL = new LatLng(37.56, 126.97);
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(SEOUL);
+        markerOptions.title("서울");
+        markerOptions.snippet("한국의 수도");
+        map.addMarker(markerOptions);
 
-            }
+        map.moveCamera(CameraUpdateFactory.newLatLng(SEOUL));
+        map.animateCamera(CameraUpdateFactory.zoomTo(11));
+    }
 
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+        mapView = (MapView) view.findViewById(R.id.map);
+        if (mapView != null) {
+            mapView.onCreate(null);
+            mapView.onResume();
+            mapView.getMapAsync(this);
+        }
     }
 }
