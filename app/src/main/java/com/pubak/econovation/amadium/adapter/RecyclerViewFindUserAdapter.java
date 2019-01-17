@@ -50,8 +50,8 @@ public class RecyclerViewFindUserAdapter extends RecyclerView.Adapter<RecyclerVi
                 intent.putExtra("uid", uidList.get(position));
                 intent.putExtra("email", dataSet.get(position).getEmail());
                 intent.putExtra("userName", dataSet.get(position).getUsername());
-                intent.putExtra("userSports", dataSet.get(position).getSport());
-                intent.putExtra("userTier", dataSet.get(position).getTier());
+                intent.putExtra("userSports", "스포츠: " + dataSet.get(position).getSport());
+                intent.putExtra("userTier", "티어: " + dataSet.get(position).getTier());
                 v.getContext().startActivity(intent);
             }
         });

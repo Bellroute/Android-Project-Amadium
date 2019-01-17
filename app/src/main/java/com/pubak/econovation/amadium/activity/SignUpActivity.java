@@ -242,11 +242,20 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void uploadUserInfo(Uri imagePath) {
-
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(editTextName.getText().toString());
-        userDTO.setProfileImageUrl(String.valueOf(imagePath));
         userDTO.setEmail(editTextEmail.getText().toString());
+        userDTO.setTier("플레이를 해야 합니다.");
+        userDTO.setSport("스포츠 선택 필요");
+        userDTO.setWinTieLose("0/0/0");
+        userDTO.setLatitude(37.541);
+        userDTO.setLongitude(126.986);
+
+        if (imagePath != null) {
+            userDTO.setProfileImageUrl(String.valueOf(imagePath));
+        } else {
+            userDTO.setProfileImageUrl("");
+        }
 
         firebaseDatabase.getReference().child("users").child(user.getUid()).setValue(userDTO);
     }
