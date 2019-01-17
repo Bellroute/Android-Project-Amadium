@@ -36,13 +36,23 @@
         android:textSize="15sp" />
 
     <TextView
-        android:id="@+id/textView_profile_tier"
+        android:id="@+id/textView_profile_sports"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:layout_marginTop="10dp"
-        android:text="Email"
+        android:text="Sports"
         android:textColor="@android:color/black"
+        android:textSize="15sp" />
+
+    <TextView
+        android:id="@+id/textView_select_sports"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="스포츠 선택하기"
+        android:textColor="@android:color/holo_blue_dark"
         android:textSize="15sp" />
 
 </LinearLayout>
