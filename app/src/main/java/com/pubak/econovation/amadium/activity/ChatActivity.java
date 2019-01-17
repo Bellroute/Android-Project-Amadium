@@ -1,6 +1,5 @@
 package com.pubak.econovation.amadium.activity;
 
-import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,13 +21,23 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.adapter.RecyclerViewChatAdapter;
 import com.pubak.econovation.amadium.dto.MessagesDTO;
+import com.pubak.econovation.amadium.dto.UserDTO;
 import com.pubak.econovation.amadium.utils.Converter;
+import com.pubak.econovation.amadium.utils.TierCalculator;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChatActivity extends AppCompatActivity {
     private final String TAG = "ChatActivity";
+    private final int WIN_CODE = 0;
+    private final int TIE_CODE = 1;
+    private final int LOSE_CODE = 2;
+    private TextView winButton;
+    private TextView tieButton;
+    private TextView loseButton;
     private TextView userName;
     private RecyclerView chatRecyclerView;
     private EditText editText;
@@ -39,6 +49,9 @@ public class ChatActivity extends AppCompatActivity {
     private List<MessagesDTO> messagesDTOList;
     private String chatUserName;
     private String userImageURL;
+    private Map<String, UserDTO> userDTOs;
+    private TextView resultButton;
+    private LinearLayout linearLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +65,7 @@ public class ChatActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         chatRecyclerView.setLayoutManager(layoutManager);
 
-        Bundle bundle = getIntent().getExtras();
+        final Bundle bundle = getIntent().getExtras();
         uid = bundle.getString("uid");
         chatUserName = bundle.getString("userName");
         userImageURL = bundle.getString("userImageURL");
@@ -60,6 +73,7 @@ public class ChatActivity extends AppCompatActivity {
         messagesDTOList = new ArrayList<>();
         adapter = new RecyclerViewChatAdapter(messagesDTOList, userImageURL);
         initDatabase();
+        chatUserDatabase();
 
         chatRecyclerView.setAdapter(adapter);
 
@@ -78,6 +92,133 @@ public class ChatActivity extends AppCompatActivity {
                     uploadDatabase(text);
                     editText.getText().clear();
                 }
+            }
+        });
+
+
+        winButton = (TextView) findViewById(R.id.texView_win);
+        tieButton = (TextView) findViewById(R.id.texView_tie);
+        loseButton = (TextView) findViewById(R.id.texView_lose);
+        linearLayout = (LinearLayout) findViewById(R.id.result);
+
+        resultButton = (TextView) findViewById(R.id.text_result_button);
+
+        resultButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                linearLayout.setVisibility(View.VISIBLE);
+            }
+        });
+
+        winButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startRating(WIN_CODE);
+                sendResult();
+            }
+        });
+
+        tieButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startRating(TIE_CODE);
+                sendResult();
+            }
+        });
+
+        loseButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startRating(LOSE_CODE);
+                sendResult();
+            }
+        });
+    }
+
+    private void sendResult() {
+        uploadDatabase(userDTOs.get("myDTO").getUsername() + "님이 결과 입력을 완료했습니다.");
+        linearLayout.setVisibility(View.INVISIBLE);
+    }
+
+    private void startRating(int resultCode) {
+
+
+        TierCalculator tierCalculator = new TierCalculator();
+        TierCalculator userTierCalculator = new TierCalculator();
+
+        tierCalculator.setData(userDTOs.get("myDTO").getWinTieLose());
+        userTierCalculator.setData(userDTOs.get("userDTO").getWinTieLose());
+
+        switch (resultCode) {
+            case WIN_CODE:
+                tierCalculator.win();
+                userTierCalculator.lose();
+                break;
+            case TIE_CODE:
+                tierCalculator.tie();
+                userTierCalculator.tie();
+                break;
+            case LOSE_CODE:
+                tierCalculator.lose();
+                userTierCalculator.win();
+                break;
+        }
+
+        Map<String, Object> myUpdates = new HashMap<>();
+        Map<String, Object> userUpdates = new HashMap<>();
+
+        myUpdates.put("winTieLose", tierCalculator.getWinTieLose());
+        myUpdates.put("tier", tierCalculator.getTier());
+        userUpdates.put("winTieLose", userTierCalculator.getWinTieLose());
+        userUpdates.put("tier", userTierCalculator.getTier());
+
+        firebaseDatabase.getReference().child("users").child(MainActivity.getCurrentUser().getUid()).updateChildren(myUpdates);
+        firebaseDatabase.getReference().child("users").child(uid).updateChildren(userUpdates);
+    }
+
+    private void chatUserDatabase() {
+        userDTOs = new HashMap<>();
+
+        firebaseDatabase.getReference().child("users").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                if (dataSnapshot.getKey().equals(MainActivity.getCurrentUser().getUid())) {
+                    userDTOs.put("myDTO", userDTO);
+                    Log.d(TAG, "onChildAdded: my" + userDTO.getWinTieLose());
+                }
+                if (dataSnapshot.getKey().equals(uid)) {
+                    userDTOs.put("userDTO", userDTO);
+                    Log.d(TAG, "onChildAdded: u" + userDTO.getWinTieLose());
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                if (dataSnapshot.getKey().equals(MainActivity.getCurrentUser().getUid())) {
+                    userDTOs.put("myDTO", userDTO);
+                    Log.d(TAG, "onChildAdded: my" + userDTO.getWinTieLose());
+                }
+                if (dataSnapshot.getKey().equals(uid)) {
+                    userDTOs.put("userDTO", userDTO);
+                    Log.d(TAG, "onChildAdded: u" + userDTO.getWinTieLose());
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }

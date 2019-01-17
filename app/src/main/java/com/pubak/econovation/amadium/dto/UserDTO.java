@@ -1,5 +1,9 @@
 package com.pubak.econovation.amadium.dto;
 
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
+
 public class UserDTO {
     private String username;
     private String profileImageUrl;
@@ -11,6 +15,7 @@ public class UserDTO {
     private String winTieLose;
 
     public String getWinTieLose() {
+        Log.d(TAG, "getWinTieLose: " + winTieLose);
         return winTieLose;
     }
 
