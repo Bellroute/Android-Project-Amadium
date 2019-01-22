@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -24,7 +23,6 @@ import com.pubak.econovation.amadium.dto.MessagesDTO;
 import com.pubak.econovation.amadium.dto.UserDTO;
 import com.pubak.econovation.amadium.utils.Converter;
 import com.pubak.econovation.amadium.utils.TierCalculator;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -42,6 +40,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView chatRecyclerView;
     private EditText editText;
     private Button sendButton;
+    private TextView cancelButton;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
     private FirebaseDatabase firebaseDatabase;
@@ -52,12 +51,15 @@ public class ChatActivity extends AppCompatActivity {
     private Map<String, UserDTO> userDTOs;
     private TextView resultButton;
     private LinearLayout linearLayout;
+    private String myUid;
+    private float[] myResultValue;
+    private float[] userResultValue;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
-        FirebaseUser user = MainActivity.getCurrentUser();
+        myUid = MainActivity.getCurrentUser().getUid();
         firebaseDatabase = firebaseDatabase.getInstance();
 
         chatRecyclerView = (RecyclerView) findViewById(R.id.recycler_chat);
@@ -67,13 +69,16 @@ public class ChatActivity extends AppCompatActivity {
 
         final Bundle bundle = getIntent().getExtras();
         uid = bundle.getString("uid");
-        chatUserName = bundle.getString("userName");
+        chatUserName = bundle.getString(    "userName");
         userImageURL = bundle.getString("userImageURL");
 
+        myResultValue = new float[1];
+        userResultValue = new float[1];
         messagesDTOList = new ArrayList<>();
         adapter = new RecyclerViewChatAdapter(messagesDTOList, userImageURL);
         initDatabase();
         chatUserDatabase();
+        loadResultListenerDatabase(myUid, uid);
 
         chatRecyclerView.setAdapter(adapter);
 
@@ -87,7 +92,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String text = editText.getText().toString();
                 if (text.equals("") || text.isEmpty()) {
-                    Toast.makeText(ChatActivity.this,"내용을 입력해 주세요", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ChatActivity.this, "내용을 입력해 주세요", Toast.LENGTH_LONG).show();
                 } else {
                     uploadDatabase(text);
                     editText.getText().clear();
@@ -95,74 +100,177 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
 
-
         winButton = (TextView) findViewById(R.id.texView_win);
         tieButton = (TextView) findViewById(R.id.texView_tie);
         loseButton = (TextView) findViewById(R.id.texView_lose);
         linearLayout = (LinearLayout) findViewById(R.id.result);
 
         resultButton = (TextView) findViewById(R.id.text_result_button);
+        cancelButton = (TextView) findViewById(R.id.cancel) ;
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                linearLayout.setVisibility(View.GONE);
+            }
+        });
 
         resultButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                linearLayout.setVisibility(View.VISIBLE);
+                if (isNotValueSet(myUid)) {
+                    linearLayout.setVisibility(View.VISIBLE);
+                } else {
+                    Toast.makeText(ChatActivity.this, "상대방의 응답을 기다리는 중입니다", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
         winButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startRating(WIN_CODE);
-                sendResult();
+                sendResultValue(WIN_CODE);
+                sendResultMessage();
             }
         });
 
         tieButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startRating(TIE_CODE);
-                sendResult();
+                sendResultValue(TIE_CODE);
+                sendResultMessage();
             }
         });
 
         loseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startRating(LOSE_CODE);
-                sendResult();
+                sendResultValue(LOSE_CODE);
+                sendResultMessage();
             }
         });
     }
 
-    private void sendResult() {
+    private boolean isNotValueSet(String uId) {
+        return getResultListenerDatabase(uId) == 2.0;
+    }
+
+    private float getResultListenerDatabase(String uId) {
+        if (uId.equals(myUid)) {
+            return myResultValue[0];
+        } else {
+            return userResultValue[0];
+        }
+    }
+
+    private void loadResultListenerDatabase(final String myUid, final String userUid) {
+        firebaseDatabase.getReference().child("resultListener").child(myUid).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.getKey().equals(userUid)) {
+                    float result = dataSnapshot.getValue(Float.class);
+                    myResultValue[0] = result;
+                    Log.d(TAG, "onChildAdded: getValue float: " + dataSnapshot.getKey() + result);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.getKey().equals(userUid)) {
+                    float result = dataSnapshot.getValue(Float.class);
+                    myResultValue[0] = result;
+                    Log.d(TAG, "onChildAdded: getValue float: " + dataSnapshot.getKey() + result);
+                }
+                Log.d(TAG, "onChildChanged: listener");
+                if (getResultListenerDatabase(myUid) + getResultListenerDatabase(uid) == 1.0) {
+                    startRating();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        firebaseDatabase.getReference().child("resultListener").child(userUid).addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.getKey().equals(myUid)) {
+                    float result = dataSnapshot.getValue(Float.class);
+                    userResultValue[0] = result;
+                    Log.d(TAG, "onChildAdded: getValue float: " + dataSnapshot.getKey() + result);
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.getKey().equals(myUid)) {
+                    float result = dataSnapshot.getValue(Float.class);
+                    userResultValue[0] = result;
+                    Log.d(TAG, "onChildAdded: getValue float: " + dataSnapshot.getKey() + result);
+                }
+                Log.d(TAG, "onChildChanged: listener");
+                if (getResultListenerDatabase(myUid) + getResultListenerDatabase(uid) == 1.0) {
+                    startRating();
+                }
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void sendResultMessage() {
         uploadDatabase(userDTOs.get("myDTO").getUsername() + "님이 결과 입력을 완료했습니다.");
         linearLayout.setVisibility(View.INVISIBLE);
     }
 
-    private void startRating(int resultCode) {
+    private void sendResultValue(int resultCode) {
 
+        switch (resultCode) {
+            case WIN_CODE:
+                firebaseDatabase.getReference().child("resultListener").child(myUid).child(uid).setValue(1);
+                break;
+            case TIE_CODE:
+                firebaseDatabase.getReference().child("resultListener").child(myUid).child(uid).setValue(0.5);
+                break;
+            case LOSE_CODE:
+                firebaseDatabase.getReference().child("resultListener").child(myUid).child(uid).setValue(0);
+                break;
+        }
+    }
 
+    private void startRating() {
+        Log.d(TAG, "startRating: ");
         TierCalculator tierCalculator = new TierCalculator();
         TierCalculator userTierCalculator = new TierCalculator();
 
         tierCalculator.setData(userDTOs.get("myDTO").getWinTieLose());
         userTierCalculator.setData(userDTOs.get("userDTO").getWinTieLose());
 
-        switch (resultCode) {
-            case WIN_CODE:
-                tierCalculator.win();
-                userTierCalculator.lose();
-                break;
-            case TIE_CODE:
-                tierCalculator.tie();
-                userTierCalculator.tie();
-                break;
-            case LOSE_CODE:
-                tierCalculator.lose();
-                userTierCalculator.win();
-                break;
-        }
+        checkWinTieLose(tierCalculator, userTierCalculator);
 
         Map<String, Object> myUpdates = new HashMap<>();
         Map<String, Object> userUpdates = new HashMap<>();
@@ -174,6 +282,33 @@ public class ChatActivity extends AppCompatActivity {
 
         firebaseDatabase.getReference().child("users").child(MainActivity.getCurrentUser().getUid()).updateChildren(myUpdates);
         firebaseDatabase.getReference().child("users").child(uid).updateChildren(userUpdates);
+
+        if (isIncorrectResultValue()) {
+            firebaseDatabase.getReference().child("resultListener").child(MainActivity.getCurrentUser().getUid()).child(uid).setValue(2);
+            firebaseDatabase.getReference().child("resultListener").child(uid).child(MainActivity.getCurrentUser().getUid()).setValue(2);
+            uploadDatabase("입력한 결과가 서로 일치하지 않습니다. 다시 시도하세요");
+        } else {
+           Toast.makeText(ChatActivity.this, "매치 종료", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private boolean isIncorrectResultValue() {
+        return !isNotValueSet(myUid) && !isNotValueSet(uid) && getResultListenerDatabase(myUid) + getResultListenerDatabase(uid) != 1.0;
+    }
+
+    private void checkWinTieLose(TierCalculator tierCalculator, TierCalculator userTierCalculator) {
+        double resultValue = getResultListenerDatabase(myUid);
+
+        if (resultValue == 1) {
+            tierCalculator.win();
+            userTierCalculator.lose();
+        } else if (resultValue == 0) {
+            tierCalculator.lose();
+            userTierCalculator.win();
+        } else {
+            tierCalculator.tie();
+            userTierCalculator.tie();
+        }
     }
 
     private void chatUserDatabase() {

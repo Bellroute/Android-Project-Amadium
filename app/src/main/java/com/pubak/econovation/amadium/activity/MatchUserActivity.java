@@ -74,5 +74,7 @@ public class MatchUserActivity extends AppCompatActivity {
         firebaseDatabase.getReference().child("user-messages").child(MainActivity.getCurrentUser().getUid()).child(uid).child(pushId).setValue(1);
         firebaseDatabase.getReference().child("user-messages").child(uid).child(MainActivity.getCurrentUser().getUid()).child(pushId).setValue(1);
         firebaseDatabase.getReference().child("messages").child(pushId).setValue(messagesDTO);
+        firebaseDatabase.getReference().child("resultListener").child(MainActivity.getCurrentUser().getUid()).child(uid).setValue(2);
+        firebaseDatabase.getReference().child("resultListener").child(uid).child(MainActivity.getCurrentUser().getUid()).setValue(2);
     }
 }
