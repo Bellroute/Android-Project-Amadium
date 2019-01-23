@@ -13,6 +13,16 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/textView_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left|center_vertical"
+            android:text="로그아웃"
+            android:layout_marginRight="5dp"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="15sp"/>
+
+        <TextView
             android:id="@+id/textView_page_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

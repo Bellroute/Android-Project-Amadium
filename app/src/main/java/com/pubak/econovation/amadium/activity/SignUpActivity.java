@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -53,7 +54,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText editTextPassword;
     private EditText editTextName;
     private EditText editTextCheckPassword;
-    private Button buttonJoin;
+    private TextView buttonJoin;
     private ImageView userImage;
     private Uri url;
     private Bitmap img;
@@ -112,7 +113,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        buttonJoin = (Button) findViewById(R.id.btn_join);
+        buttonJoin = (TextView) findViewById(R.id.btn_join);
         buttonJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -111,7 +111,13 @@ public class FindUserActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                if (!userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
+                    userDTOList.add(userDTO);
+                    uidList.add(dataSnapshot.getKey());
+                }
+                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
+                adapter.notifyItemInserted(userDTOList.size() - 1);
             }
 
             @Override
@@ -121,7 +127,13 @@ public class FindUserActivity extends AppCompatActivity {
 
             @Override
             public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                if (!userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
+                    userDTOList.add(userDTO);
+                    uidList.add(dataSnapshot.getKey());
+                }
+                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
+                adapter.notifyItemInserted(userDTOList.size() - 1);
             }
 
             @Override

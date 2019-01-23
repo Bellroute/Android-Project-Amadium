@@ -66,6 +66,7 @@ public class ProfileFragment extends Fragment {
         user = MainActivity.getCurrentUser();
         userUid = user.getUid();
         userImage = (ImageView) view.findViewById(R.id.image_user_profile);
+        userImage.bringToFront();
         deleteImage = (TextView) view.findViewById(R.id.textView_profile_delete);
         userName = (TextView) view.findViewById(R.id.textView_profile_name);
         userSports = (TextView) view.findViewById(R.id.textView_profile_sports);

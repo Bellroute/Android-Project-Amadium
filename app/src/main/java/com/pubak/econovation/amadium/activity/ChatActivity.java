@@ -1,3 +1,4 @@
+
 package com.pubak.econovation.amadium.activity;
 
 import android.support.annotation.NonNull;
@@ -69,7 +70,7 @@ public class ChatActivity extends AppCompatActivity {
 
         final Bundle bundle = getIntent().getExtras();
         uid = bundle.getString("uid");
-        chatUserName = bundle.getString(    "userName");
+        chatUserName = bundle.getString("userName");
         userImageURL = bundle.getString("userImageURL");
 
         myResultValue = new float[1];
@@ -104,9 +105,10 @@ public class ChatActivity extends AppCompatActivity {
         tieButton = (TextView) findViewById(R.id.texView_tie);
         loseButton = (TextView) findViewById(R.id.texView_lose);
         linearLayout = (LinearLayout) findViewById(R.id.result);
-
         resultButton = (TextView) findViewById(R.id.text_result_button);
-        cancelButton = (TextView) findViewById(R.id.cancel) ;
+
+
+        cancelButton = (TextView) findViewById(R.id.cancel);
         cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,6 +121,8 @@ public class ChatActivity extends AppCompatActivity {
             public void onClick(View v) {
                 if (isNotValueSet(myUid)) {
                     linearLayout.setVisibility(View.VISIBLE);
+                } else if (myResultValue[0] + userResultValue[0] == 1) {
+                    Toast.makeText(ChatActivity.this, "종료된 매치입니다", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(ChatActivity.this, "상대방의 응답을 기다리는 중입니다", Toast.LENGTH_LONG).show();
                 }
@@ -183,6 +187,10 @@ public class ChatActivity extends AppCompatActivity {
                 Log.d(TAG, "onChildChanged: listener");
                 if (getResultListenerDatabase(myUid) + getResultListenerDatabase(uid) == 1.0) {
                     startRating();
+                } else if (isIncorrectResultValue()) {
+                    firebaseDatabase.getReference().child("resultListener").child(MainActivity.getCurrentUser().getUid()).child(uid).setValue(2);
+                    firebaseDatabase.getReference().child("resultListener").child(uid).child(MainActivity.getCurrentUser().getUid()).setValue(2);
+                    uploadDatabase("입력한 결과가 서로 일치하지 않습니다. 다시 입력하세요");
                 }
             }
 
@@ -282,15 +290,9 @@ public class ChatActivity extends AppCompatActivity {
 
         firebaseDatabase.getReference().child("users").child(MainActivity.getCurrentUser().getUid()).updateChildren(myUpdates);
         firebaseDatabase.getReference().child("users").child(uid).updateChildren(userUpdates);
-
-        if (isIncorrectResultValue()) {
-            firebaseDatabase.getReference().child("resultListener").child(MainActivity.getCurrentUser().getUid()).child(uid).setValue(2);
-            firebaseDatabase.getReference().child("resultListener").child(uid).child(MainActivity.getCurrentUser().getUid()).setValue(2);
-            uploadDatabase("입력한 결과가 서로 일치하지 않습니다. 다시 시도하세요");
-        } else {
-           Toast.makeText(ChatActivity.this, "매치 종료", Toast.LENGTH_LONG).show();
-        }
+        Toast.makeText(ChatActivity.this, "매치 종료", Toast.LENGTH_LONG).show();
     }
+
 
     private boolean isIncorrectResultValue() {
         return !isNotValueSet(myUid) && !isNotValueSet(uid) && getResultListenerDatabase(myUid) + getResultListenerDatabase(uid) != 1.0;
@@ -382,6 +384,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (dataSnapshot.getKey().equals(uId)) {
                     MessagesDTO messagesDTO = dataSnapshot.getValue(MessagesDTO.class);
                     messagesDTOList.add(messagesDTO);
+                    chatRecyclerView.scrollToPosition(messagesDTOList.size() - 1);
                     adapter.notifyItemInserted(messagesDTOList.size() - 1);
                 }
                 Log.d(TAG, "onChildAdded: " + messagesDTOList.size());

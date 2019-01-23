@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TabLayout tabLayout;
     private ViewPager viewPager;
     private TextView findPlayer;
+    private TextView logOut;
 
     @SuppressLint("ResourceType")
     @Override
@@ -42,9 +43,19 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         pageName = findViewById(R.id.textView_page_name);
-        pageName.setText("프로필");
+        pageName.setText("내정보");
 
         user = FirebaseAuth.getInstance().getCurrentUser();
+
+        logOut = findViewById(R.id.textView_logout);
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, LogInActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        });
 
         findPlayer = findViewById(R.id.textView_find_user);
         findPlayer.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                 viewPager.setCurrentItem(tab.getPosition());
                 switch (tab.getPosition()) {
                     case 0:
-                        pageName.setText("프로필");
+                        pageName.setText("내정보");
                         break;
                     case 1:
                         pageName.setText("매치 리스트");

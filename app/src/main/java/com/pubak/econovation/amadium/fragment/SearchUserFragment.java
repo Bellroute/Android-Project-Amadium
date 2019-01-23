@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -32,9 +31,6 @@ import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.activity.MainActivity;
 import com.pubak.econovation.amadium.activity.MatchUserActivity;
 import com.pubak.econovation.amadium.dto.UserDTO;
-
-import org.w3c.dom.Text;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -51,7 +47,7 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search_user, container, false);
         firebaseDatabase = firebaseDatabase.getInstance();
-        data = new HashMap<String, String>();
+        data = new HashMap<>();
 
         return view;
     }
@@ -156,7 +152,10 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                Log.d(TAG, "onChildAdded: dataSnapShot get key: " + dataSnapshot.getKey());
+                getMarkers(userDTO);
+                data.put(userDTO.getEmail(), dataSnapshot.getKey());
             }
 
             @Override
