@@ -16,7 +16,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pubak.econovation.amadium.R;
-import com.pubak.econovation.amadium.activity.MainActivity;
 import com.pubak.econovation.amadium.adapter.RecyclerViewRankListAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
@@ -25,10 +24,9 @@ import java.util.List;
 
 public class RankListFragment extends Fragment {
     private final String TAG = "RankListFragment";
-    private List<UserDTO> userDTOList;
     private RecyclerView recyclerView;
-    private List<String> uidList;
     private RecyclerViewRankListAdapter adapter;
+    private List<UserDTO> userDTOList;
 
 
     @Nullable
@@ -36,7 +34,6 @@ public class RankListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_rank_list, container, false);
         userDTOList = new ArrayList<>();
-        uidList = new ArrayList<>();
         recyclerView = (RecyclerView) view.findViewById(R.id.recycler_rank_list);
 
         initDatabase();
@@ -44,7 +41,7 @@ public class RankListFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        adapter = new RecyclerViewRankListAdapter(userDTOList, uidList);
+        adapter = new RecyclerViewRankListAdapter(userDTOList);
         recyclerView.setAdapter(adapter);
 
         return view;
@@ -56,15 +53,18 @@ public class RankListFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
-                userDTOList.add(userDTO);
-                uidList.add(dataSnapshot.getKey());
+                userDTO.setUid(dataSnapshot.getKey());
                 Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
+                userDTOList.add(userDTO);
                 adapter.notifyItemInserted(userDTOList.size() - 1);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
+                Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
+                userDTOList.add(userDTO);
+                adapter.notifyItemInserted(userDTOList.size() - 1);
             }
 
             @Override

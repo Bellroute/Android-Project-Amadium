@@ -35,7 +35,7 @@
         <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.ChatActivity" />
         <activity android:name=".activity.FindUserActivity" />
-        <activity android:name=".activity.MatchUserActivity"></activity>
+        <activity android:name=".activity.MatchUserActivity"/>
     </application>
 
 </manifest>

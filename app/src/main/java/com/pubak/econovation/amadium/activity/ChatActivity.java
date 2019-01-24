@@ -385,14 +385,13 @@ public class ChatActivity extends AppCompatActivity {
                     MessagesDTO messagesDTO = dataSnapshot.getValue(MessagesDTO.class);
                     messagesDTOList.add(messagesDTO);
                     chatRecyclerView.scrollToPosition(messagesDTOList.size() - 1);
-                    adapter.notifyItemInserted(messagesDTOList.size() - 1);
+                    adapter.notifyDataSetChanged();
                 }
                 Log.d(TAG, "onChildAdded: " + messagesDTOList.size());
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
@@ -424,7 +423,9 @@ public class ChatActivity extends AppCompatActivity {
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                Log.d(TAG, "initDatabase: dataSnapshot.getKey() : " + dataSnapshot.getKey());
+                Log.d(TAG, "initDatabase: dataSnapshot.getValue() : " + dataSnapshot.getValue());
+                initDatabaseList(dataSnapshot.getKey());
             }
 
             @Override

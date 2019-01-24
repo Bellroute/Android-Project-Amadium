@@ -11,20 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.activity.ChatActivity;
 import com.pubak.econovation.amadium.dto.MessagesDTO;
 import com.pubak.econovation.amadium.dto.UserDTO;
 import com.pubak.econovation.amadium.utils.Converter;
 import com.pubak.econovation.amadium.utils.LoadImage;
-
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,9 +28,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private final String TAG = "RecyclerViewAdapter";
     private List<UserDTO> dataSet;
     private Context context;
-    private List<String> uidList;
-    private Map<String, List<String>> chatUidListPerUid;
-    private Map<String, MessagesDTO> messagesDTOList;
+    private Map<String, String> lastChatUidMap;
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView userNameView;
@@ -54,12 +48,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
-    public RecyclerViewAdapter(Context context, List<UserDTO> dataSet, List<String> uidList, Map<String, List<String>> chatUidListPerUid) {
+    public RecyclerViewAdapter(Context context, List<UserDTO> dataSet, Map<String, String> lastChatUidMap) {
         this.dataSet = dataSet;
         this.context = context;
-        this.uidList = uidList;
-        this.chatUidListPerUid = chatUidListPerUid;
-        messagesDTOList = new HashMap<>();
+        this.lastChatUidMap = lastChatUidMap;
+        Log.d(TAG, "RecyclerViewAdapter: " + dataSet);
+        Log.d(TAG, "RecyclerViewAdapter: " + lastChatUidMap);
     }
 
     @Override
@@ -71,33 +65,30 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(final RecyclerViewAdapter.ViewHolder holder, final int position) {
+
         holder.userNameView.setText(dataSet.get(position).getUsername());
 
-        final String uid = uidList.get(position);
+        final String lastChatUid = lastChatUidMap.get(dataSet.get(position).getUid());
         FirebaseDatabase.getInstance().getReference().child("messages").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d(TAG, "onChildAdded: b" + dataSnapshot.getKey());
-                if (chatUidListPerUid.get(uid).get(chatUidListPerUid.get(uid).size() - 1).equals(dataSnapshot.getKey())) {
+                if (lastChatUid.equals(dataSnapshot.getKey())) {
                     Log.d(TAG, "onChildAdded: b");
                     MessagesDTO messagesDTO = dataSnapshot.getValue(MessagesDTO.class);
-                    messagesDTOList.put(uid, messagesDTO);
-
-                    holder.lastChat.setText(messagesDTOList.get(uid).getText());
-                    holder.chatTime.setText(Converter.convertTimeStampToString(messagesDTOList.get(uid).getTimestamp()));
+                    holder.lastChat.setText(messagesDTO.getText());
+                    holder.chatTime.setText(Converter.convertTimeStampToString(messagesDTO.getTimestamp()));
                 }
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Log.d(TAG, "onChildAdded: b" + dataSnapshot.getKey());
-                if (chatUidListPerUid.get(uid).get(chatUidListPerUid.get(uid).size() - 1).equals(dataSnapshot.getKey())) {
+                if (lastChatUid.equals(dataSnapshot.getKey())) {
                     Log.d(TAG, "onChildAdded: b");
                     MessagesDTO messagesDTO = dataSnapshot.getValue(MessagesDTO.class);
-                    messagesDTOList.put(uid, messagesDTO);
-
-                    holder.lastChat.setText(messagesDTOList.get(uid).getText());
-                    holder.chatTime.setText(Converter.convertTimeStampToString(messagesDTOList.get(uid).getTimestamp()));
+                    holder.lastChat.setText(messagesDTO.getText());
+                    holder.chatTime.setText(Converter.convertTimeStampToString(messagesDTO.getTimestamp()));
                 }
             }
 
@@ -125,7 +116,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), ChatActivity.class);
-                intent.putExtra("uid", uidList.get(position));
+                intent.putExtra("uid", dataSet.get(position).getUid());
                 intent.putExtra("userName", dataSet.get(position).getUsername());
                 intent.putExtra("userImageURL", dataSet.get(position).getProfileImageUrl());
                 v.getContext().startActivity(intent);

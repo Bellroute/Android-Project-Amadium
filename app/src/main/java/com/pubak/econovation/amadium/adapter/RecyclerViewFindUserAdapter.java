@@ -52,6 +52,8 @@ public class RecyclerViewFindUserAdapter extends RecyclerView.Adapter<RecyclerVi
                 intent.putExtra("userName", dataSet.get(position).getUsername());
                 intent.putExtra("userSports", "스포츠: " + dataSet.get(position).getSport());
                 intent.putExtra("userTier", "티어: " + dataSet.get(position).getTier());
+                intent.putExtra("userWinTieLose", "전적(승/무/패): " + dataSet.get(position).getWinTieLose());
+                intent.putExtra("userImage", dataSet.get(position).getProfileImageUrl());
                 v.getContext().startActivity(intent);
             }
         });

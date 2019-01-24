@@ -51,6 +51,8 @@ public class ProfileFragment extends Fragment {
     private TextView userName;
     private TextView userSports;
     private TextView selectSports;
+    private TextView userTier;
+    private TextView userWinTieLose;
     private UserDTO userDTO;
     private FirebaseAuth firebaseAuth;
     private FirebaseStorage firebaseStorage;
@@ -67,10 +69,13 @@ public class ProfileFragment extends Fragment {
         userUid = user.getUid();
         userImage = (ImageView) view.findViewById(R.id.image_user_profile);
         userImage.bringToFront();
+
         deleteImage = (TextView) view.findViewById(R.id.textView_profile_delete);
         userName = (TextView) view.findViewById(R.id.textView_profile_name);
         userSports = (TextView) view.findViewById(R.id.textView_profile_sports);
         selectSports = (TextView) view.findViewById(R.id.textView_select_sports);
+        userTier = (TextView) view.findViewById(R.id.textView_profile_tier);
+        userWinTieLose = (TextView) view.findViewById(R.id.textView_profile_wintielose);
 
         firebaseDatabase = firebaseDatabase.getInstance();
         firebaseStorage = firebaseStorage.getInstance();
@@ -82,7 +87,9 @@ public class ProfileFragment extends Fragment {
                 Log.d(TAG, "onDataChange: " + userDTO.getUsername());
 
                 userName.setText(userDTO.getUsername());
-                userSports.setText(userDTO.getSport());
+                userSports.setText("스포츠: " + userDTO.getSport());
+                userTier.setText("티어: " + userDTO.getTier());
+                userWinTieLose.setText("전적(승/무/패): " + userDTO.getWinTieLose());
 
                 if (userDTO.getProfileImageUrl() != null) {
                     new LoadImage(userImage).execute(userDTO.getProfileImageUrl());

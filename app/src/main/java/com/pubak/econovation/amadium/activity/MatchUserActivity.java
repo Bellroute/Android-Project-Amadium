@@ -4,23 +4,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.database.FirebaseDatabase;
 import com.pubak.econovation.amadium.R;
 import com.pubak.econovation.amadium.dto.MessagesDTO;
 import com.pubak.econovation.amadium.utils.Converter;
+import com.pubak.econovation.amadium.utils.LoadImage;
 
 public class MatchUserActivity extends AppCompatActivity {
     private final String TAG ="MatchUserActivity";
     private TextView userName;
     private TextView userSports;
     private TextView userTier;
+    private TextView userWinTieLose;
     private TextView match;
+    private ImageView userImage;
     private String email;
     private String name;
     private String sports;
     private String tier;
+    private String winTieLose;
+    private String userImagePath;
     private FirebaseDatabase firebaseDatabase;
     private String uid;
 
@@ -36,15 +42,26 @@ public class MatchUserActivity extends AppCompatActivity {
         name = bundle.getString("userName");
         sports = bundle.getString("userSports");
         tier = bundle.getString("userTier");
+        winTieLose = bundle.getString("userWinTieLose");
+        userImagePath = bundle.getString("userImage");
 
-        userName = findViewById(R.id.textView_user);
+        userName = findViewById(R.id.textView_name);
         userName.setText(name);
 
-        userSports = findViewById(R.id.textView_sports);
+        userSports = findViewById(R.id.textView_profile_sports);
         userSports.setText(sports);
 
-        userTier = findViewById(R.id.textView_tier);
+        userTier = findViewById(R.id.textView_profile_tier);
         userTier.setText(tier);
+
+        userWinTieLose = findViewById(R.id.textView_profile_wintielose);
+        userWinTieLose.setText(winTieLose);
+
+        userImage = findViewById(R.id.image_user_profile);
+        if (userImagePath != null) {
+            new LoadImage(userImage).execute(userImagePath);
+        }
+        userImage.bringToFront();
 
         match = findViewById(R.id.textView_match);
         if (email.equals(MainActivity.getCurrentUser().getEmail())) {

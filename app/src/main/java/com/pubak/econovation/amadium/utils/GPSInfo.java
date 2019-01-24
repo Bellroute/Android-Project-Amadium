@@ -23,7 +23,7 @@ public class GPSInfo extends Service implements LocationListener {
     protected LocationManager locationManager;
     boolean isGPSEnabled = false;
     boolean isNetworkEnabled = false;
-    boolean isGetLocation = false;
+    boolean isGetLocation = true;
     Location location;
     double lat;
     double lon;

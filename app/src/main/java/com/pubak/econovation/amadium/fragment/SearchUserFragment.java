@@ -38,7 +38,6 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
     private static final String TAG = "SearchUserFragment";
     private GoogleMap map;
     private MapView mapView;
-    private UserDTO user;
     private FirebaseDatabase firebaseDatabase;
     private Map<String, String> data;
 
@@ -72,7 +71,13 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
 
         if (userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+
+            map.moveCamera(CameraUpdateFactory.newLatLng(markValue));
+            map.animateCamera(CameraUpdateFactory.zoomTo(12));
+            Log.d(TAG, "getMarkers: " + userDTO.getLatitude() +" // " + userDTO.getLongitude());
         }
+
+
         map.addMarker(markerOptions).showInfoWindow();
 
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
@@ -87,6 +92,8 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
                 intent.putExtra("userName", marker.getTitle());
                 intent.putExtra("userSports", split[0]);
                 intent.putExtra("userTier", split[1]);
+                intent.putExtra("userWinTieLose", userDTO.getWinTieLose());
+                intent.putExtra("userImage", userDTO.getProfileImageUrl());
                 getContext().startActivity(intent);
             }
         });
@@ -119,14 +126,6 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
                 return info;
             }
         });
-
-        if (userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
-            user = userDTO;
-
-            map.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(user.getLatitude(), user.getLongitude())));
-            map.animateCamera(CameraUpdateFactory.zoomTo(14));
-        }
-
     }
 
     @Override
