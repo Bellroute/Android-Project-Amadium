@@ -184,6 +184,8 @@ public class SignUpActivity extends AppCompatActivity {
                             // 회원가입 성공시
                             Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
                             upload();
+                            Intent intent = new Intent(SignUpActivity.this, LogInActivity.class);
+                            startActivity(intent);
                             finish();
                         } else {
                             Toast.makeText(SignUpActivity.this, "이미 가입된 계정입니다.", Toast.LENGTH_LONG).show();
@@ -246,7 +248,7 @@ public class SignUpActivity extends AppCompatActivity {
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(editTextName.getText().toString());
         userDTO.setEmail(editTextEmail.getText().toString());
-        userDTO.setTier("플레이를 해야 합니다.");
+        userDTO.setTier("0");
         userDTO.setSport("스포츠 선택 필요");
         userDTO.setWinTieLose("0/0/0");
         userDTO.setLatitude(37.541);

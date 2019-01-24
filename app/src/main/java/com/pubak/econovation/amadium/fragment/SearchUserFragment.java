@@ -3,6 +3,8 @@ package com.pubak.econovation.amadium.fragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Location;
+import android.location.LocationListener;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -34,10 +36,11 @@ import com.pubak.econovation.amadium.dto.UserDTO;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
+public class SearchUserFragment extends Fragment implements OnMapReadyCallback, LocationListener {
     private static final String TAG = "SearchUserFragment";
     private GoogleMap map;
     private MapView mapView;
+    private UserDTO user;
     private FirebaseDatabase firebaseDatabase;
     private Map<String, String> data;
 
@@ -61,15 +64,16 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getMarkers(final UserDTO userDTO) {
+        final UserDTO dto = userDTO;
         Log.d(TAG, "getMarkers: userDTO" + userDTO);
         final LatLng markValue = new LatLng(userDTO.getLatitude(), userDTO.getLongitude());
         MarkerOptions markerOptions = new MarkerOptions();
-
         markerOptions.position(markValue)
                 .title(userDTO.getUsername())
                 .snippet("스포츠: " + userDTO.getSport() + "\n티어: " + userDTO.getTier() + "\n" + userDTO.getEmail());
 
         if (userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
+            user = userDTO;
             markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
 
             map.moveCamera(CameraUpdateFactory.newLatLng(markValue));
@@ -77,14 +81,12 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
             Log.d(TAG, "getMarkers: " + userDTO.getLatitude() +" // " + userDTO.getLongitude());
         }
 
-
         map.addMarker(markerOptions).showInfoWindow();
 
         map.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 Intent intent = new Intent(getContext(), MatchUserActivity.class);
-
                 String[] split = marker.getSnippet().split("\n");
                 Log.d(TAG, "onInfoWindowClick: split" + split);
                 intent.putExtra("uid", data.get(split[2]));
@@ -92,8 +94,8 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
                 intent.putExtra("userName", marker.getTitle());
                 intent.putExtra("userSports", split[0]);
                 intent.putExtra("userTier", split[1]);
-                intent.putExtra("userWinTieLose", userDTO.getWinTieLose());
-                intent.putExtra("userImage", userDTO.getProfileImageUrl());
+                intent.putExtra("userWinTieLose", dto.getWinTieLose());
+                intent.putExtra("userImage", dto.getProfileImageUrl());
                 getContext().startActivity(intent);
             }
         });
@@ -172,5 +174,27 @@ public class SearchUserFragment extends Fragment implements OnMapReadyCallback {
 
             }
         });
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        LatLng markValue = new LatLng(user.getLatitude(), user.getLongitude());
+        map.moveCamera(CameraUpdateFactory.newLatLng(markValue));
+        map.animateCamera(CameraUpdateFactory.zoomTo(12));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
     }
 }
