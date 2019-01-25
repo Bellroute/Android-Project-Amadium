@@ -1,16 +1,32 @@
 package com.pubak.econovation.amadium.dto;
 
-public class UserDTO {
-    private String username = "";
-    private String profileImageUrl = "";
-    private String email = "";
-    private String sport = "스포츠 선택 필요";
-    private String tier = "플레이를 해야 합니다.";
+import android.support.annotation.NonNull;
+import android.util.Log;
+
+import static android.content.ContentValues.TAG;
+import static java.lang.Integer.parseInt;
+
+public class UserDTO implements Comparable<UserDTO>{
+    private String username;
+    private String profileImageUrl;
+    private String email;
+    private String sport;
+    private String tier;
     private double latitude;
     private double longitude;
     private String winTieLose;
+    private String uid;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public String getWinTieLose() {
+        Log.d(TAG, "getWinTieLose: " + winTieLose);
         return winTieLose;
     }
 
@@ -72,5 +88,16 @@ public class UserDTO {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    @Override
+    public int compareTo(@NonNull UserDTO o) {
+        if (Integer.parseInt(this.tier) > Integer.parseInt(o.tier)) {
+            return 1;
+        } else if (Integer.parseInt(this.tier) < Integer.parseInt(o.tier)) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 }

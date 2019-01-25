@@ -1,5 +1,7 @@
 package com.pubak.econovation.amadium.fragment;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,7 +16,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,6 +39,8 @@ import com.pubak.econovation.amadium.dto.UserDTO;
 import com.pubak.econovation.amadium.utils.LoadImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -42,7 +49,10 @@ public class ProfileFragment extends Fragment {
     private ImageView userImage;
     private TextView deleteImage;
     private TextView userName;
+    private TextView userSports;
+    private TextView selectSports;
     private TextView userTier;
+    private TextView userWinTieLose;
     private UserDTO userDTO;
     private FirebaseAuth firebaseAuth;
     private FirebaseStorage firebaseStorage;
@@ -58,9 +68,15 @@ public class ProfileFragment extends Fragment {
         user = MainActivity.getCurrentUser();
         userUid = user.getUid();
         userImage = (ImageView) view.findViewById(R.id.image_user_profile);
+        userImage.bringToFront();
+
         deleteImage = (TextView) view.findViewById(R.id.textView_profile_delete);
         userName = (TextView) view.findViewById(R.id.textView_profile_name);
+        userSports = (TextView) view.findViewById(R.id.textView_profile_sports);
+        selectSports = (TextView) view.findViewById(R.id.textView_select_sports);
         userTier = (TextView) view.findViewById(R.id.textView_profile_tier);
+        userWinTieLose = (TextView) view.findViewById(R.id.textView_profile_wintielose);
+
         firebaseDatabase = firebaseDatabase.getInstance();
         firebaseStorage = firebaseStorage.getInstance();
 
@@ -71,7 +87,9 @@ public class ProfileFragment extends Fragment {
                 Log.d(TAG, "onDataChange: " + userDTO.getUsername());
 
                 userName.setText(userDTO.getUsername());
-                userTier.setText(userDTO.getEmail());
+                userSports.setText("스포츠: " + userDTO.getSport());
+                userTier.setText("티어: " + userDTO.getTier());
+                userWinTieLose.setText("전적(승/무/패): " + userDTO.getWinTieLose());
 
                 if (userDTO.getProfileImageUrl() != null) {
                     new LoadImage(userImage).execute(userDTO.getProfileImageUrl());
@@ -104,7 +122,44 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+
+        setSportsList();
         return view;
+    }
+
+    private void setSportsList() {
+        ListView listView = new ListView(getContext());
+        List<String> sportsList = new ArrayList<>();
+        sportsList.add("Tennis");
+        sportsList.add("TableTennis");
+        sportsList.add("Billiards");
+        sportsList.add("Football");
+        sportsList.add("BasketBall");
+        sportsList.add("BaseBall");
+
+        final ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, sportsList);
+        listView.setAdapter(adapter);
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setCancelable(true);
+        builder.setView(listView);
+        final AlertDialog dialog = builder.create();
+
+        selectSports.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.show();
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                firebaseDatabase.getReference().child("users").child(user.getUid()).child("sport").setValue(adapter.getItem(position));
+                userSports.setText(adapter.getItem(position));
+                dialog.dismiss();
+            }
+        });
     }
 
     @Override

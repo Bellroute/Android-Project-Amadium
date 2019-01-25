@@ -19,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -53,7 +54,7 @@ public class SignUpActivity extends AppCompatActivity {
     private EditText editTextPassword;
     private EditText editTextName;
     private EditText editTextCheckPassword;
-    private Button buttonJoin;
+    private TextView buttonJoin;
     private ImageView userImage;
     private Uri url;
     private Bitmap img;
@@ -112,7 +113,7 @@ public class SignUpActivity extends AppCompatActivity {
             }
         });
 
-        buttonJoin = (Button) findViewById(R.id.btn_join);
+        buttonJoin = (TextView) findViewById(R.id.btn_join);
         buttonJoin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -183,6 +184,8 @@ public class SignUpActivity extends AppCompatActivity {
                             // 회원가입 성공시
                             Toast.makeText(SignUpActivity.this, "회원가입 성공", Toast.LENGTH_SHORT).show();
                             upload();
+                            Intent intent = new Intent(SignUpActivity.this, LogInActivity.class);
+                            startActivity(intent);
                             finish();
                         } else {
                             Toast.makeText(SignUpActivity.this, "이미 가입된 계정입니다.", Toast.LENGTH_LONG).show();
@@ -242,11 +245,20 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     private void uploadUserInfo(Uri imagePath) {
-
         UserDTO userDTO = new UserDTO();
         userDTO.setUsername(editTextName.getText().toString());
-        userDTO.setProfileImageUrl(String.valueOf(imagePath));
         userDTO.setEmail(editTextEmail.getText().toString());
+        userDTO.setTier("0");
+        userDTO.setSport("스포츠 선택 필요");
+        userDTO.setWinTieLose("0/0/0");
+        userDTO.setLatitude(37.541);
+        userDTO.setLongitude(126.986);
+
+        if (imagePath != null) {
+            userDTO.setProfileImageUrl(String.valueOf(imagePath));
+        } else {
+            userDTO.setProfileImageUrl("");
+        }
 
         firebaseDatabase.getReference().child("users").child(user.getUid()).setValue(userDTO);
     }

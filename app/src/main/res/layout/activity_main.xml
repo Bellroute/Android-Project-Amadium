@@ -13,6 +13,16 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/textView_logout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="7dp"
+            android:layout_gravity="left|center_vertical"
+            android:text="로그아웃"
+            android:textColor="@android:color/holo_blue_dark"
+            android:textSize="15sp"/>
+
+        <TextView
             android:id="@+id/textView_page_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical"
             android:text="플레이어 찾기"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="7dp"
             android:textColor="@android:color/holo_blue_dark"
             android:textSize="15sp" />
     </FrameLayout>
@@ -47,6 +57,7 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager"
             android:layout_width="match_parent"
+            android:layout_centerInParent="true"
             android:layout_height="match_parent"
             android:layout_above="@+id/tablayout" />
 

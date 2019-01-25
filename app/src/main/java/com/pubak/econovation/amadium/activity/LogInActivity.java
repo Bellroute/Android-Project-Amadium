@@ -5,10 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -32,17 +31,18 @@ public class LogInActivity extends AppCompatActivity {
         editTextEmail = (EditText) findViewById(R.id.edittext_email);
         editTextPassword = (EditText) findViewById(R.id.edittext_password);
 
-        Button buttonSignUp = (Button) findViewById(R.id.btn_signup);
+        TextView buttonSignUp = (TextView) findViewById(R.id.textView_signup);
         buttonSignUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 // SignUpActivity 연결
                 Intent intent = new Intent(LogInActivity.this, SignUpActivity.class);
                 startActivity(intent);
+                finish();
             }
         });
 
-        Button buttonLogIn = (Button) findViewById(R.id.btn_login);
+        TextView buttonLogIn = (TextView) findViewById(R.id.textView_login);
         buttonLogIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

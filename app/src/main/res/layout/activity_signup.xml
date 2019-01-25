@@ -13,7 +13,7 @@
         android:layout_height="150dp"
         android:layout_gravity="center"
         android:layout_marginBottom="20dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="70dp"
         android:src="@drawable/ic_user" />
 
     <TextView
@@ -42,7 +42,8 @@
         android:ems="10"
         android:hint="E-mail"
         android:inputType="textEmailAddress"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:theme="@style/EditTheme" />
 
     <EditText
         android:id="@+id/editText_name"
@@ -52,7 +53,8 @@
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:theme="@style/EditTheme" />
 
     <EditText
         android:id="@+id/editText_passWord"
@@ -62,7 +64,8 @@
         android:ems="10"
         android:hint="Password"
         android:inputType="textPassword"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:theme="@style/EditTheme" />
 
     <EditText
         android:id="@+id/editText_check_passWord"
@@ -72,10 +75,11 @@
         android:ems="10"
         android:hint="check Password"
         android:inputType="textPassword"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:theme="@style/EditTheme" />
 
 
-    <Button
+    <TextView
         android:id="@+id/btn_join"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

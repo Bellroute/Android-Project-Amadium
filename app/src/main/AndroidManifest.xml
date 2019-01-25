@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
 
     <application
         android:allowBackup="true"
@@ -33,7 +35,7 @@
         <activity android:name=".activity.MainActivity" />
         <activity android:name=".activity.ChatActivity" />
         <activity android:name=".activity.FindUserActivity" />
-        <activity android:name=".activity.MatchUserActivity"></activity>
+        <activity android:name=".activity.MatchUserActivity"/>
     </application>
 
 </manifest>

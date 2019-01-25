@@ -21,7 +21,9 @@ import com.pubak.econovation.amadium.adapter.RecyclerViewAdapter;
 import com.pubak.econovation.amadium.dto.UserDTO;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MatchListFragment extends Fragment {
     private static final String TAG = "MatchListFragment";
@@ -30,8 +32,7 @@ public class MatchListFragment extends Fragment {
     private RecyclerView.Adapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private List<UserDTO> userDTOList;
-    private List<String> uidList;
-
+    private Map<String, String> lastChatUidMap;
 
     @Nullable
     @Override
@@ -43,15 +44,16 @@ public class MatchListFragment extends Fragment {
 
         layoutManager = new LinearLayoutManager(this.getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
-
-        uidList = new ArrayList<>();
         userDTOList = new ArrayList<>();
-        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList, uidList);
+        lastChatUidMap = new HashMap<>();
         initDatabase();
+
+
+        adapter = new RecyclerViewAdapter(this.getActivity(), userDTOList, lastChatUidMap);
 
         mRecyclerView.setAdapter(adapter);
 
-        Log.d(TAG, "onCreateView: ");
+        Log.d(TAG, "onCreateView: " + userDTOList);
 
         return view;
     }
@@ -61,17 +63,17 @@ public class MatchListFragment extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 UserDTO userDTO = dataSnapshot.getValue(UserDTO.class);
-                if (uId.equals(dataSnapshot.getKey()) && !userDTO.getEmail().equals(MainActivity.getCurrentUser().getEmail())) {
+                userDTO.setUid(dataSnapshot.getKey());
+                if (uId.equals(dataSnapshot.getKey()) && !userDTO.getUid().equals(MainActivity.getCurrentUser().getUid())) {
+                    Log.d(TAG, "onChildAdded: q");
                     userDTOList.add(userDTO);
-                    uidList.add(uId);
                 }
-                adapter.notifyItemInserted(userDTOList.size() - 1);
+                adapter.notifyDataSetChanged();
                 Log.d(TAG, "onChildAdded: " + userDTO.getUsername());
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
             }
 
             @Override
@@ -96,13 +98,22 @@ public class MatchListFragment extends Fragment {
         firebaseDatabase.getReference().child("user-messages").child(MainActivity.getCurrentUser().getUid()).addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                Log.d(TAG, "initDatabase: " + dataSnapshot.getKey());
+                Log.d(TAG, "initDatabase: " + dataSnapshot.getValue());
                 initDatabaseList(dataSnapshot.getKey());
+                Object dataMass = dataSnapshot.getValue();
+                String[] splitData = dataMass.toString().split(", ");
+                String lastChatUid = splitData[splitData.length -1].replace("=1}", "");
+                lastChatUidMap.put(dataSnapshot.getKey(), lastChatUid);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                Log.d(TAG, "initDatabase: " + dataSnapshot.getValue());
+                initDatabaseList(dataSnapshot.getKey());
+                Object dataMass = dataSnapshot.getValue();
+                String[] splitData = dataMass.toString().split(", ");
+                String lastChatUid = splitData[splitData.length -1].replace("=1}", "");
+                lastChatUidMap.put(dataSnapshot.getKey(), lastChatUid);
             }
 
             @Override
